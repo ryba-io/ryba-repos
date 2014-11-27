@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+mkdir -p /var/www/html/pub/epel/6/x86_64
+reposync -p /var/www/html/pub/epel/6/x86_64 --repoid=epel
+createrepo /var/www/html/pub/epel/6/x86_64

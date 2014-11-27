@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+# Synchronize HDP core
+mkdir -p /var/www/html/ambari/centos6/1.x/GA
+reposync -p /var/www/html/ambari/centos6/1.x/GA --repoid=ambari-1.x
+createrepo /var/www/html/ambari/centos6/1.x/GA
+# Synchronize HDP utils
+mkdir -p /var/www/html/ambari/centos6/1.x/updates/1.6.1
+reposync -p /var/www/html/ambari/centos6/1.x/updates/1.6.1 --repoid=Updates-ambari-1.6.1
+createrepo /var/www/html/ambari/centos6/1.x/updates/1.6.1
