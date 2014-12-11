@@ -1,0 +1,46 @@
+#!/bin/bash
+cd `dirname ${BASH_SOURCE}`/..
+
+function run {
+  run="./shims/$2/run.sh"
+  echo $run
+  if [ ! -f $run ]; then
+    echo "Shim $2 does not exists"
+    exit 2
+  fi
+  port=${3:-8080}
+  # exec $run
+  docker run --name repo-$2 -d -v ./public/$2:/var/www/html/public -p $3:80 avalawn/docker-httpd:latest
+}
+
+function sync {
+  run="./shims/$2/sync/run.sh"
+  if [ ! -f $run ]; then
+    echo "Shim $2 does not exists"
+    exit 2
+  fi
+  exec $run
+}
+
+function list {
+  ls ./shims
+}
+
+if [[ $1 == "run" ]]; then
+  run "$@"
+elif [[ $1 == "sync" ]]; then
+  sync "$@"
+elif [[ $1 == "list" ]]; then
+  list "$@"
+else
+  echo ''
+  echo './paas.sh [help|run|sync|list]'
+  echo ''
+  echo 'Repository manager for Ryba.'
+  echo ''
+  echo 'help      Print this message'
+  echo 'run       Start the server'
+  echo 'sync      Report the server status'
+  echo 'list      Stop the server'
+  echo ''
+fi
