@@ -80,9 +80,10 @@ _runRepo = (repo,init) ->
   else
     port = fs.readFileSync "#{repopath}/port"
     app='sync'  
-  exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}/repo:/var/www/html --rm=true --entrypoint /app/#{app} ryba_repos/syncer", (r_err,r_stdout,r_stderr) ->
-      if r_err then console.log r_stderr
-      else "docker run --name=repo_#{repo} -v #{repopath}/repo:/var/www/html -p #{port}:80 avalawn/httpd"
+  exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}/repo:/var/www/html/ --rm=true --entrypoint /app/#{app} ryba_repos/syncer", (r_err,r_stdout,r_stderr) ->
+    if r_err then console.log r_stderr
+    else exec "docker run --name=repo_#{repo} -d -v #{repopath}/repo:/usr/local/apache2/htdocs/ -p #{port}:80 httpd", (err,stdout,stderr) ->
+      if err then console.log stderr
 
 initRepo = (repo, u, proxy) ->
   repopath = "#{dirpath}/#{repo}"
