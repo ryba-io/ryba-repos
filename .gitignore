@@ -1,6 +1,5 @@
 .*
 /shims/*
 /node_modules/
-/port_inc.conf
 /public
 !.gitignore

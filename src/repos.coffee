@@ -18,7 +18,7 @@ util = require 'util'
 #    return a.indexOf(i) < 0
 #  )
 
-dirpath = path.normalize "#{path.dirname process.argv[1]}/../shims"
+dirpath = path.normalize "#{path.dirname process.argv[1]}/../public"
 #Port par défaut
 default_port = 100180
 
@@ -30,7 +30,7 @@ list = (repos) ->
   console.log file for file in dir
 
 getNewPort = () ->
-  port_path = "#{dirpath}/../port_inc.conf"
+  port_path = "#{dirpath}/ports.inc"
   if fs.existsSync port_path
     port = parseInt fs.readFileSync port_path
   else
