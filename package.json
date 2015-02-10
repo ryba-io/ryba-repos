@@ -6,7 +6,7 @@
     "parameters": "latest",
     "remove": "latest",
     "multimatch": "latest",
-    "my-node-ini": "latest",
+    "node-ini": "latest",
     "request": "latest",
     "each": "latest"
   },

@@ -8,9 +8,18 @@ multimatch = require 'multimatch'
 exec = require('child_process').exec
 each = require 'each'
 url = require 'url'
-ini = require 'my-node-ini'
+ini = require 'node-ini'
 http = require 'request'
 util = require 'util'
+
+dirpath = path.normalize "#{path.dirname process.argv[1]}/../public"
+try
+  config = require "#{dirpath}/config"
+catch e
+  console.log e
+  config =
+    next_port: 10180
+  fs.writeFileSync "#{dirpath}/config.json", JSON.stringify config, null, 2
 
 #Ajout de la fonction diff pour les tableaux  
 #Array.prototype.diff = (a) ->
@@ -18,9 +27,7 @@ util = require 'util'
 #    return a.indexOf(i) < 0
 #  )
 
-dirpath = path.normalize "#{path.dirname process.argv[1]}/../public"
 #Port par défaut
-default_port = 10180
 
 list = (repos) ->
   if repos?
@@ -29,13 +36,14 @@ list = (repos) ->
     dir = fs.readdirSync dirpath
   console.log file for file in dir
 
-getNewPort = () ->
-  port_path = "#{dirpath}/ports.inc"
-  if fs.existsSync port_path
-    port = parseInt fs.readFileSync port_path
+setPort = (repo, port) ->
+  if port?
+    config[repo] = port
   else
-    port = default_port
-  fs.writeFileSync port_path, "#{port+1}"
+    config[repo] = config.next_port
+    config.next_port++
+
+  fs.writeFileSync "#{dirpath}/config.json", JSON.stringify config, null, 2
   return port
 
 buildAssetsFiles = (repo,u,config) ->
@@ -53,82 +61,62 @@ buildAssetsFiles = (repo,u,config) ->
   # buf += '  unset http_proxy\n'
   # buf += 'fi\n\n'
   buf += 'yum clean expire-cache\n'
-  sync = buf;
   buf += "wget -nv #{u} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
-  sync += 'yum update -y\n'
   Object.keys(config).forEach((element, key, _array) ->
     path = url.parse(config[element].baseurl).pathname
     buf += "\n# [#{element}]\n"
-    sync+= "\n# [#{element}]\n"
     buf += "mkdir -p /var/ryba#{path}\n"
     buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
-    sync+= "reposync -p /var/ryba#{path} --repoid=#{element}\n"
     buf += "createrepo /var/ryba#{path}\n"
   )
   fs.writeFileSync "#{repopath}/assets/init", buf
   fs.chmodSync "#{repopath}/assets/init", 0o755
-  fs.writeFileSync "#{repopath}/assets/sync", sync
-  fs.chmodSync "#{repopath}/assets/sync", 0o755
 
-_runRepo = (repo,init,port) ->
-  repopath = "#{dirpath}/#{repo}"
-  if init
-    port ?= getNewPort()
-    fs.writeFileSync "#{repopath}/port", port
-    app='init'
-  else
-    port = fs.readFileSync "#{repopath}/port"
-    app='sync'  
-  exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}/repo:/var/ryba --rm=true --entrypoint /app/#{app} ryba_repos/syncer", (r_err,r_stdout,r_stderr) ->
-    if r_err then console.log r_stderr
-    else exec "docker run --name=repo_#{repo} -d -v #{repopath}/repo:/usr/local/apache2/htdocs/ -p #{port}:80 httpd", (err,stdout,stderr) ->
-      if err then console.log stderr
 
-initRepo = (repo, u, port) ->
+syncRepo = (repo, u, port) ->
   repopath = "#{dirpath}/#{repo}"
   fs.exists repopath, (exists) ->
+    do_end = () ->
+        exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}:/var/ryba --rm=true --entrypoint /app/init ryba_repos/syncer", (r_err, r_stdout, r_stderr) ->
+          if r_err then console.log r_stderr
     if exists
-      console.log "[#{repo}] repo already exists, ignoring configuration step"
-      _runRepo repo, false
+      do_end()
     else
-      console.log "[#{repo}] creating configuration files..."
       options = {url: u}
       http options, (err, response, body) ->
-        config = ini.parse body
+        inifile = ini.parse body
         fs.mkdir repopath, () ->
-          buildAssetsFiles repo, u, config
-          fs.mkdir "#{repopath}/repo", () ->
-            console.log "[#{repo}] end of configuration files creation"
-            _runRepo repo, true, port
+          buildAssetsFiles repo, u, inifile
+          do_end()
 
-sync = (repos) ->
-  repos = fs.readdirSync(dirpath) unless repos?
-  each(repos)
-  .parallel true
-  .on 'item', (repo,next) ->
-    _runRepo repo, false
-  .on 'both', (err) ->
-    if err then console.log 'Finished with ERRORS' else console.log 'Finished successfully!'
-
-init = (repos, urls, ports) ->
+sync = (repos, urls, ports) ->
   if repos.length isnt urls?.length
     console.log "targetted repos number (#{repos.length}) and/or urls number (#{urls?.length}) and/or ports number (#{ports?.length}) don't match, exiting..." 
     process.exit 22      # Linux Invalid argument errCode
   each(repos)
   .parallel true
   .on 'item', (repo, index, next) ->
-    initRepo repo, urls?[index], ports?[index]
+    syncRepo repo, urls?[index], ports?[index]
   .on 'both', (err) ->
     if err then console.log 'Finished with errors :',err.message else console.log 'Finished successfully !'
   
-_dockerExec = (repos,action) ->
+_dockerExec = (repos,action, port) ->
   console.log "#{action} #{repos}:"
   each repos
   .parallel true
   .on 'item', (repo,next) ->
-    exec "docker #{action} #{repo}", (err, stdout, stderr) ->
-      console.log "[#{repo}]: #{stderr}"
+    do_end = () ->
+      exec "docker #{action} #{repo}", (err, stdout, stderr) ->
+        console.log "[#{repo}]: #{stderr}"
+    if action is 'start'
+      if !config[repo]? or port?
+        setPort repo, port
+        exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{config[repo]}:80 httpd", (err,stdout,stderr) ->
+          if err then console.log stderr
+      else do_end()
+    else
+      do_end()
   .on 'both', (err) ->
     if err then console.log '#{action} finished with errors' else console.log '#{action} finished successfully !'
 
@@ -136,7 +124,7 @@ start = (repos) ->
   if repos?
     for repo, i in repos
       repos[i] = "repo_#{repo}"
-    _dockerExec repos, 'start'
+      _dockerExec repo, 'start'
   else
     exec "docker ps -a | grep -oh 'repo_\\S\\+'", (err, stdout, stderr) ->
       if err
@@ -183,7 +171,7 @@ params = parameters
       description: 'filter'
     ]
   ,
-    name: 'init'
+    name: 'sync'
     description: 'initialize local repo with Docker container'
     options: [
       name: 'repo'
@@ -252,8 +240,7 @@ console.log params.help arg.name if arg.command is 'help'
 
 switch arg.command
   when 'list' then list arg.repo
-  when 'init' then init arg.repo, arg.url, arg.proxy
-  when 'sync' then sync arg.repo, arg.proxy
+  when 'sync' then sync arg.repo, arg.url, arg.port
   when 'start' then start arg.repo
   when 'stop' then stop arg.repo
   when 'rm' then del arg.repo
