@@ -20,7 +20,7 @@ util = require 'util'
 
 dirpath = path.normalize "#{path.dirname process.argv[1]}/../public"
 #Port par défaut
-default_port = 100180
+default_port = 10180
 
 list = (repos) ->
   if repos?
