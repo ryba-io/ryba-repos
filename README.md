@@ -9,7 +9,7 @@ Docker. It contains tools to:
 
 ## Installation
 
-This chapter assumes that you have already installed docker and coffee-script
+This chapter assumes that you have already installed Docker and Node.js.
 
 ```bash
 git clone https://github.com/ryba-io/ryba-repos
@@ -17,17 +17,27 @@ cd ryba-repos
 docker build -t ryba_repos/syncer
 ```
 
-## Commands
+## Init
 
-### Init
+`repos init -r {name} -u {url}`
 
-Synchronize a local repo with Docker container
+*   -r, --repo   
+    Name of the repository.   
+*   -u, --url   
+    URL from where to fetch the repository definition file.    
+*   -p, --port   
+    Port use to serve the repository locally.   
+
+Synchronize a local repo using a temporary Docker container. The repository are
+downloaded into your local public folder located inside this project. The
+folder is named after the "name" argument. For example, here's how to
+synchronize the Epel repository.
 
 ```bash
-bin/repos init repository-name -u http://remote.repository:PORT/path/repoFile.repo
+./bin/repos init epel -u https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
 ```
 
-### Start
+## Start
 
 Start a repo, all by default
 
@@ -36,18 +46,13 @@ bin/repos start repository-name
 bin/repos start
 ```
 
-
-## Arborescence
-
-## Installation
-
 ## List of default port
 
-#centos: 10180
-#epel: 10181
-#hdp-2.1.2.0: 10182
-#hdp-2.1.4.0: 10183
-#hdp-2.1.5.0: 10184
-#hdp-2.1.7.0: 10185
-#ambari-1.6.1: 10186
+*   centos: 10180   
+*   epel: 10181   
+*   hdp-2.1.2.0: 10182   
+*   hdp-2.1.4.0: 10183   
+*   hdp-2.1.5.0: 10184   
+*   hdp-2.1.7.0: 10185   
+*   ambari-1.6.1: 10186   
 
