@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "coffee-script": "latest"
+  },
+  "scripts": {
+    "preinstall": "./node_modules/.bin/coffee -b -o lib src"
   }
 }
