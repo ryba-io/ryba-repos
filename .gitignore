@@ -1,5 +1,4 @@
 .*
-/shims/*
 /node_modules/
 /public
 !.gitignore

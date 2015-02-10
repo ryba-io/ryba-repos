@@ -30,11 +30,10 @@ catch e
 #Port par défaut
 
 list = (repos) ->
-  if repos?
-    dir = multimatch fs.readdirSync(dirpath), repos
-  else
-    dir = fs.readdirSync dirpath
-  console.log file for file in dir
+  fs.readdir dirpath, (err, dir) ->
+    dir = multimatch dir, repos if repos?
+    for file in dir
+      console.log file if file isnt 'config.json'
 
 setPort = (repo, port) ->
   if port?
@@ -42,58 +41,50 @@ setPort = (repo, port) ->
   else
     config[repo] = config.next_port
     config.next_port++
-
-  fs.writeFileSync "#{dirpath}/config.json", JSON.stringify config, null, 2
+  fs.writeFile "#{dirpath}/config.json", JSON.stringify(config, null, 2)
   return port
 
-buildAssetsFiles = (repo,u,config) ->
+buildAssetsFiles = (repo,u,config, next) ->
   url_path = url.parse(u).pathname
   url_name = url_path.split '/'
   url_name = url_name[url_name.length-1]
-  
   repopath = "#{dirpath}/#{repo}"
-  fs.mkdirSync "#{repopath}/assets"
-  buf  = '#!/bin/bash\n'
-  buf += 'set -e\n\n'
-  # buf += 'if [ -n "$1" ]; then\n'
-  # buf += '  export http_proxy="$1"\n'
-  # buf += 'elif [ -n "$http_proxy" ]; then\n'
-  # buf += '  unset http_proxy\n'
-  # buf += 'fi\n\n'
-  buf += 'yum clean expire-cache\n'
-  buf += "wget -nv #{u} -O /etc/yum.repos.d/#{url_name}\n"
-  buf += 'yum update -y\n'
-  Object.keys(config).forEach((element, key, _array) ->
-    path = url.parse(config[element].baseurl).pathname
-    buf += "\n# [#{element}]\n"
-    buf += "mkdir -p /var/ryba#{path}\n"
-    buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
-    buf += "createrepo /var/ryba#{path}\n"
-  )
-  fs.writeFileSync "#{repopath}/assets/init", buf
-  fs.chmodSync "#{repopath}/assets/init", 0o755
+  fs.mkdir "#{repopath}/assets", () ->
+    buf  = '#!/bin/bash\n'
+    buf += 'set -e\n\n'
+    buf += 'yum clean expire-cache\n'
+    buf += "wget -nv #{u} -O /etc/yum.repos.d/#{url_name}\n"
+    buf += 'yum update -y\n'
+    Object.keys(config).forEach((element, key, _array) ->
+      path = url.parse(config[element].baseurl).pathname
+      buf += "\n# [#{element}]\n"
+      buf += "mkdir -p /var/ryba#{path}\n"
+      buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
+      buf += "createrepo /var/ryba#{path}\n"
+    )
+    fs.writeFile "#{repopath}/assets/init", buf, () ->
+      fs.chmod "#{repopath}/assets/init", next
 
 
 syncRepo = (repo, u, port) ->
   repopath = "#{dirpath}/#{repo}"
   fs.exists repopath, (exists) ->
     do_end = () ->
-        exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}:/var/ryba --rm=true --entrypoint /app/init ryba_repos/syncer", (r_err, r_stdout, r_stderr) ->
-          if r_err then console.log r_stderr
+      exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}:/var/ryba --rm=true --entrypoint /app/init ryba_repos/syncer", (r_err, r_stdout, r_stderr) ->
+        if r_err then console.log r_stderr
+        else dockerExec repo, 'start', port
     if exists
       do_end()
     else
       options = {url: u}
       http options, (err, response, body) ->
-        inifile = ini.parse body
-        fs.mkdir repopath, () ->
-          buildAssetsFiles repo, u, inifile
-          do_end()
+        ini.parse body, (err, inidata) ->
+          fs.mkdir repopath, () ->
+            buildAssetsFiles repo, u, inidata, do_end
 
 sync = (repos, urls, ports) ->
-  if repos.length isnt urls?.length
-    console.log "targetted repos number (#{repos.length}) and/or urls number (#{urls?.length}) and/or ports number (#{ports?.length}) don't match, exiting..." 
-    process.exit 22      # Linux Invalid argument errCode
+  return Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
+  return Error "repos number (#{repos.length}) and ports number (#{ports?.length}) don't match" if ports? and repos.length isnt ports.length
   each(repos)
   .parallel true
   .on 'item', (repo, index, next) ->
@@ -101,30 +92,29 @@ sync = (repos, urls, ports) ->
   .on 'both', (err) ->
     if err then console.log 'Finished with errors :',err.message else console.log 'Finished successfully !'
   
-_dockerExec = (repos,action, port) ->
-  console.log "#{action} #{repos}:"
-  each repos
-  .parallel true
-  .on 'item', (repo,next) ->
-    do_end = () ->
-      exec "docker #{action} #{repo}", (err, stdout, stderr) ->
-        console.log "[#{repo}]: #{stderr}"
-    if action is 'start'
-      if !config[repo]? or port?
-        setPort repo, port
-        exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{config[repo]}:80 httpd", (err,stdout,stderr) ->
-          if err then console.log stderr
-      else do_end()
-    else
-      do_end()
-  .on 'both', (err) ->
-    if err then console.log '#{action} finished with errors' else console.log '#{action} finished successfully !'
+dockerExec = (repo,action, port) ->
+  if action is 'start' and port?
+    do_run = () ->
+      setPort repo, port
+      exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{config[repo]}:80 httpd"
+    if config[repo]?
+      exec "docker stop repo_#{repo} && docker rm repo_#{repo}", do_run
+    else do_run()
+  else
+    exec "docker #{action} #{repo}", (err, stdout, stderr) ->
+      console.log "[#{repo}]: #{stderr}"
 
-start = (repos) ->
+start = (repos, ports) ->
+  startEach = (r) ->
+    each(r)
+    .parallel true
+    .on 'item', (repo, index, next) ->
+      dockerExec "repo_#{repo}", 'start', ports?[index]
+    .on 'both', (err) ->
+      if err then console.log 'start finished with errors' else console.log "start finished successfully !"
   if repos?
-    for repo, i in repos
-      repos[i] = "repo_#{repo}"
-      _dockerExec repo, 'start'
+    return Error "wrong arguments, please ignore ports or set it for each repo" if ports? and repos.length isnt ports.length
+    startEach repos
   else
     exec "docker ps -a | grep -oh 'repo_\\S\\+'", (err, stdout, stderr) ->
       if err
@@ -132,13 +122,18 @@ start = (repos) ->
       else
         repos = stdout.split '\n'
         repos.pop()
-        _dockerExec repos, 'start'
+        startEach repos
 
 stop = (repos) ->
+  stopEach = (r) ->
+    each(r)
+    .parallel true
+    .on 'item', (repo, index, next) ->
+      dockerExec "repo_#{repo}", 'stop'
+    .on 'both', (err) ->
+      if err then console.log 'stop finished with errors' else console.log "stop finished successfully !"
   if repos?
-    for repo, i in repos
-      repos[i] = "repo_#{repo}"
-    _dockerExec repos, 'stop'
+    stopEach repos
   else
     exec "docker ps | grep -oh 'repo_\\S\\+'", (err, stdout, stderr) ->
       if err
@@ -146,17 +141,16 @@ stop = (repos) ->
       else
         repos = stdout.split '\n'
         repos.pop()
-        _dockerExec repos, 'stop'
+        stopEach repos
 
 del = (repos) ->
   each(repos)
   .parallel true
   .on 'item', (repo,next) ->
     exec "docker rm repo_#{repo}", (err,stdout,stderr) ->
-      console.log "[#{repo}] #{stderr}" if err?
-    rm.removeSync "#{dirpath}/#{repo}"
-  .on 'both', (b_err) ->
-    if b_err then console.log "Finished with ERRORS" else console.log 'Finished successfully!'
+      rm.remove "#{dirpath}/#{repo}"
+  .on 'both', (err) ->
+    if err then  console.log "Finished with ERRORS" else console.log 'Finished successfully!'
 
 params = parameters
   name: 'repos'
@@ -188,17 +182,24 @@ params = parameters
     ,
       name: 'port'
       shortcut: 'p'
+      type: 'array'
       required: false
       description: 'force port value'
     ]
   ,
     name: 'start'
-    description: 'Start Repo server(s) with Docker without synchronizing repo'
+    description: 'Start Repo server(s) with Docker'
     options: [
       name: 'repo'
       type: 'array'
       shortcut: 'r'
       description: 'the repo(s) to start. All by default'
+    ,
+      name: 'port'
+      shortcut: 'p'
+      type: 'array'
+      required: false
+      description: 'force port value'
     ]
   ,
     name: 'stop'
@@ -234,11 +235,10 @@ if argTab.length > 1 and '-r' not in argTab
         argTab.splice i, 0, '-r'
         break
 
-arg = params.parse(argTab);
-
-console.log params.help arg.name if arg.command is 'help'
+arg = params.parse argTab
 
 switch arg.command
+  when 'help' then console.log params.help arg.name
   when 'list' then list arg.repo
   when 'sync' then sync arg.repo, arg.url, arg.port
   when 'start' then start arg.repo
