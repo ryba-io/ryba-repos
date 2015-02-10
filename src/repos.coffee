@@ -61,47 +61,46 @@ buildAssetsFiles = (repo,u,config) ->
     path = url.parse(config[element].baseurl).pathname
     buf += "\n# [#{element}]\n"
     sync+= "\n# [#{element}]\n"
-    buf += "mkdir -p /var/www/html#{path}\n"
-    buf += "reposync -p /var/www/html#{path} --repoid=#{element}\n"
-    sync+= "reposync -p /var/www/html#{path} --repoid=#{element}\n"
-    buf += "createrepo /var/www/html#{path}\n"
+    buf += "mkdir -p /var/ryba#{path}\n"
+    buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
+    sync+= "reposync -p /var/ryba#{path} --repoid=#{element}\n"
+    buf += "createrepo /var/ryba#{path}\n"
   )
   fs.writeFileSync "#{repopath}/assets/init", buf
   fs.chmodSync "#{repopath}/assets/init", 0o755
   fs.writeFileSync "#{repopath}/assets/sync", sync
   fs.chmodSync "#{repopath}/assets/sync", 0o755
 
-_runRepo = (repo,init) ->
+_runRepo = (repo,init,port) ->
   repopath = "#{dirpath}/#{repo}"
   if init
-    port = getNewPort()
+    port ?= getNewPort()
     fs.writeFileSync "#{repopath}/port", port
     app='init'
   else
     port = fs.readFileSync "#{repopath}/port"
     app='sync'  
-  exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}/repo:/var/www/html/ --rm=true --entrypoint /app/#{app} ryba_repos/syncer", (r_err,r_stdout,r_stderr) ->
+  exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}/repo:/var/ryba --rm=true --entrypoint /app/#{app} ryba_repos/syncer", (r_err,r_stdout,r_stderr) ->
     if r_err then console.log r_stderr
     else exec "docker run --name=repo_#{repo} -d -v #{repopath}/repo:/usr/local/apache2/htdocs/ -p #{port}:80 httpd", (err,stdout,stderr) ->
       if err then console.log stderr
 
-initRepo = (repo, u, proxy) ->
+initRepo = (repo, u, port) ->
   repopath = "#{dirpath}/#{repo}"
   fs.exists repopath, (exists) ->
     if exists
       console.log "[#{repo}] repo already exists, ignoring configuration step"
-      _runRepo repo,false
+      _runRepo repo, false
     else
       console.log "[#{repo}] creating configuration files..."
       options = {url: u}
-      options.proxy = proxy if proxy
       http options, (err, response, body) ->
         config = ini.parse body
         fs.mkdir repopath, () ->
           buildAssetsFiles repo, u, config
           fs.mkdir "#{repopath}/repo", () ->
             console.log "[#{repo}] end of configuration files creation"
-            _runRepo repo,true
+            _runRepo repo, true, port
 
 sync = (repos) ->
   repos = fs.readdirSync(dirpath) unless repos?
@@ -112,14 +111,14 @@ sync = (repos) ->
   .on 'both', (err) ->
     if err then console.log 'Finished with ERRORS' else console.log 'Finished successfully!'
 
-init = (repos,urls,proxy) ->
+init = (repos, urls, ports) ->
   if repos.length isnt urls?.length
-    console.log "targetted repos number (#{repos.length}) and urls number (#{urls?.length}) don't match, exiting..." 
+    console.log "targetted repos number (#{repos.length}) and/or urls number (#{urls?.length}) and/or ports number (#{ports?.length}) don't match, exiting..." 
     process.exit 22      # Linux Invalid argument errCode
   each(repos)
   .parallel true
   .on 'item', (repo, index, next) ->
-    initRepo repo, urls?[index],proxy
+    initRepo repo, urls?[index], ports?[index]
   .on 'both', (err) ->
     if err then console.log 'Finished with errors :',err.message else console.log 'Finished successfully !'
   
@@ -199,9 +198,10 @@ params = parameters
       required: true
       description: 'the url(s) of the repo(s)'
     ,
-      name: 'proxy'
+      name: 'port'
       shortcut: 'p'
-      description: 'a proxy parameter if needed'
+      required: false
+      description: 'force port value'
     ]
   ,
     name: 'start'
