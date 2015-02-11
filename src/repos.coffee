@@ -19,15 +19,7 @@ catch e
   console.log e
   config =
     next_port: 10180
-  fs.writeFileSync "#{dirpath}/config.json", JSON.stringify config, null, 2
-
-#Ajout de la fonction diff pour les tableaux  
-#Array.prototype.diff = (a) ->
-#  return @filter((i) ->
-#    return a.indexOf(i) < 0
-#  )
-
-#Port par défaut
+  fs.writeFile "#{dirpath}/config.json", JSON.stringify(config, null, 2)
 
 list = (repos) ->
   fs.readdir dirpath, (err, dir) ->
@@ -49,33 +41,32 @@ buildAssetsFiles = (repo,u,config, next) ->
   url_name = url_path.split '/'
   url_name = url_name[url_name.length-1]
   repopath = "#{dirpath}/#{repo}"
-  fs.mkdir "#{repopath}/assets", () ->
-    buf  = '#!/bin/bash\n'
-    buf += 'set -e\n\n'
-    buf += 'yum clean expire-cache\n'
-    buf += "wget -nv #{u} -O /etc/yum.repos.d/#{url_name}\n"
-    buf += 'yum update -y\n'
-    Object.keys(config).forEach((element, key, _array) ->
-      path = url.parse(config[element].baseurl).pathname
-      buf += "\n# [#{element}]\n"
-      buf += "mkdir -p /var/ryba#{path}\n"
-      buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
-      buf += "createrepo /var/ryba#{path}\n"
-    )
-    fs.writeFile "#{repopath}/assets/init", buf, () ->
-      fs.chmod "#{repopath}/assets/init", next
-
+  buf  = '#!/bin/bash\n'
+  buf += 'set -e\n\n'
+  buf += 'yum clean expire-cache\n'
+  buf += "wget -nv #{u} -O /etc/yum.repos.d/#{url_name}\n"
+  buf += 'yum update -y\n'
+  Object.keys(config).forEach((element, key, _array) ->
+    path = url.parse(config[element].baseurl).pathname
+    buf += "\n# [#{element}]\n"
+    buf += "mkdir -p /var/ryba#{path}\n"
+    buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
+    buf += "createrepo /var/ryba#{path}\n"
+  )
+  fs.writeFile "#{repopath}/init", buf, () ->
+    fs.chmod "#{repopath}/init", next
 
 syncRepo = (repo, u, port) ->
   repopath = "#{dirpath}/#{repo}"
-  fs.exists repopath, (exists) ->
+  fs.exists "#{repopath}/init", (exists) ->
     do_end = () ->
-      exec "docker run -v #{repopath}/assets/:/app/ -v #{repopath}:/var/ryba --rm=true --entrypoint /app/init ryba_repos/syncer", (r_err, r_stdout, r_stderr) ->
+      exec "docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer", (r_err, r_stdout, r_stderr) ->
         if r_err then console.log r_stderr
-        else dockerExec repo, 'start', port
-    if exists
+        dockerRun repo, port
+    if exists and not u?
       do_end()
     else
+      return Error 'Cannot create repo without remote repo url' unless u? 
       options = {url: u}
       http options, (err, response, body) ->
         ini.parse body, (err, inidata) ->
@@ -90,26 +81,29 @@ sync = (repos, urls, ports) ->
   .on 'item', (repo, index, next) ->
     syncRepo repo, urls?[index], ports?[index]
   .on 'both', (err) ->
-    if err then console.log 'Finished with errors :',err.message else console.log 'Finished successfully !'
-  
-dockerExec = (repo,action, port) ->
-  if action is 'start' and port?
-    do_run = () ->
-      setPort repo, port
-      exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{config[repo]}:80 httpd"
-    if config[repo]?
-      exec "docker stop repo_#{repo} && docker rm repo_#{repo}", do_run
-    else do_run()
-  else
-    exec "docker #{action} #{repo}", (err, stdout, stderr) ->
-      console.log "[#{repo}]: #{stderr}"
+    if err then console.log 'Finished with errors :', err.message else console.log 'Finished successfully !'
+
+dockerExec = (action, repo, callback) ->
+  exec "docker #{action} repo_#{arg}", callback
+
+dockerRun = (repo, port, callback) ->
+    setPort repo, port
+    exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{port}:80 httpd", callback
 
 start = (repos, ports) ->
   startEach = (r) ->
     each(r)
     .parallel true
     .on 'item', (repo, index, next) ->
-      dockerExec "repo_#{repo}", 'start', ports?[index]
+      if ports?[index]
+        port = parseInt ports[index]
+        if config[repo]?
+          if config[repo] isnt port
+            dockerExec 'stop', repo, (err) ->
+              dockerExec 'rm', repo, (err) -> dockerRun repo, port
+          else dockerExec 'start', repo
+        else dockerRun repo, port
+      else dockerExec 'start', repo
     .on 'both', (err) ->
       if err then console.log 'start finished with errors' else console.log "start finished successfully !"
   if repos?
@@ -129,9 +123,9 @@ stop = (repos) ->
     each(r)
     .parallel true
     .on 'item', (repo, index, next) ->
-      dockerExec "repo_#{repo}", 'stop'
+      dockerExec 'stop', repo
     .on 'both', (err) ->
-      if err then console.log 'stop finished with errors' else console.log "stop finished successfully !"
+      if err then console.log 'Finished with ERRORS' else console.log "stop finished successfully !"
   if repos?
     stopEach repos
   else
@@ -147,8 +141,7 @@ del = (repos) ->
   each(repos)
   .parallel true
   .on 'item', (repo,next) ->
-    exec "docker rm repo_#{repo}", (err,stdout,stderr) ->
-      rm.remove "#{dirpath}/#{repo}"
+    dockerExec 'rm', repo, () -> rm.remove "#{dirpath}/#{repo}"
   .on 'both', (err) ->
     if err then  console.log "Finished with ERRORS" else console.log 'Finished successfully!'
 
@@ -162,7 +155,7 @@ params = parameters
       name: 'repo'
       type: 'array'
       shortcut: 'r'
-      description: 'filter'
+      description: 'repo name filter(s)'
     ]
   ,
     name: 'sync'
@@ -177,7 +170,7 @@ params = parameters
       name: 'url'
       type: 'array'
       shortcut: 'u'
-      required: true
+      required: false
       description: 'the url(s) of the repo(s)'
     ,
       name: 'port'
@@ -198,7 +191,6 @@ params = parameters
       name: 'port'
       shortcut: 'p'
       type: 'array'
-      required: false
       description: 'force port value'
     ]
   ,
@@ -218,7 +210,7 @@ params = parameters
       shortcut: 'r'
       type: 'array'
       required: true
-      description: 'the repo to delete'
+      description: 'the repo(s) to delete'
     ]
   ]
 
@@ -241,6 +233,6 @@ switch arg.command
   when 'help' then console.log params.help arg.name
   when 'list' then list arg.repo
   when 'sync' then sync arg.repo, arg.url, arg.port
-  when 'start' then start arg.repo
+  when 'start' then start arg.repo, arg.port
   when 'stop' then stop arg.repo
   when 'rm' then del arg.repo
