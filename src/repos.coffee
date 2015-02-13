@@ -12,6 +12,8 @@ ini = require 'node-ini'
 http = require 'request'
 util = require 'util'
 
+printError = (err) -> console.log err if err?
+
 dirpath = path.normalize "#{path.dirname process.argv[1]}/../public"
 try
   config = require "#{dirpath}/config"
@@ -21,11 +23,12 @@ catch e
     next_port: 10180
   fs.writeFile "#{dirpath}/config.json", JSON.stringify(config, null, 2)
 
-list = (repos) ->
+list = (repos, next) ->
   fs.readdir dirpath, (err, dir) ->
-    dir = multimatch dir, repos if repos?
-    for file in dir
-      console.log file if file isnt 'config.json'
+    repos ?= ['*']
+    repos.push '!config.json'
+    dir = multimatch dir, repos
+    next err, dir
 
 setPort = (repo, port) ->
   if port?
@@ -84,11 +87,13 @@ sync = (repos, urls, ports) ->
     if err then console.log 'Finished with errors :', err.message else console.log 'Finished successfully !'
 
 dockerExec = (action, repo, callback) ->
-  exec "docker #{action} repo_#{arg}", callback
+  console.log action, repo
+  exec "docker #{action} repo_#{repo}", callback
 
 dockerRun = (repo, port, callback) ->
-    setPort repo, port
-    exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{port}:80 httpd", callback
+  console.log "run new container: #{repo}"
+  setPort repo, port
+  exec "docker run --name=repo_#{repo} -d -v #{dirpath}/#{repo}:/usr/local/apache2/htdocs/ -p #{port}:80 httpd", callback
 
 start = (repos, ports) ->
   startEach = (r) ->
@@ -99,23 +104,20 @@ start = (repos, ports) ->
         port = parseInt ports[index]
         if config[repo]?
           if config[repo] isnt port
-            dockerExec 'stop', repo, (err) ->
-              dockerExec 'rm', repo, (err) -> dockerRun repo, port
-          else dockerExec 'start', repo
-        else dockerRun repo, port
-      else dockerExec 'start', repo
+            dockerExec 'stop', repo, (err) -> dockerExec 'rm', repo, (err) -> dockerRun repo, port, printError
+          else dockerExec 'start', repo, printError
+        else dockerRun repo, port, printError
+      else dockerExec 'start', repo, printError
     .on 'both', (err) ->
       if err then console.log 'start finished with errors' else console.log "start finished successfully !"
   if repos?
     return Error "wrong arguments, please ignore ports or set it for each repo" if ports? and repos.length isnt ports.length
     startEach repos
   else
-    exec "docker ps -a | grep -oh 'repo_\\S\\+'", (err, stdout, stderr) ->
+    list repos, (err, repos) ->
       if err
-        console.log "Impossible to list repo docker containers: #{stderr}"
+        console.log "Impossible to list repo docker containers: #{err}"
       else
-        repos = stdout.split '\n'
-        repos.pop()
         startEach repos
 
 stop = (repos) ->
@@ -231,7 +233,7 @@ arg = params.parse argTab
 
 switch arg.command
   when 'help' then console.log params.help arg.name
-  when 'list' then list arg.repo
+  when 'list' then list arg.repo, (err, dir) -> console.log file for file in dir
   when 'sync' then sync arg.repo, arg.url, arg.port
   when 'start' then start arg.repo, arg.port
   when 'stop' then stop arg.repo
