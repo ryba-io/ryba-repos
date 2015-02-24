@@ -14,7 +14,7 @@ This chapter assumes that you have already installed Docker and Node.js.
 ```bash
 git clone https://github.com/ryba-io/ryba-repos
 cd ryba-repos
-docker build -t ryba_repos/syncer
+docker build -t ryba_repos/syncer .
 ```
 
 ## Init
@@ -30,11 +30,11 @@ docker build -t ryba_repos/syncer
 
 Synchronize a local repo using a temporary Docker container. The repository are
 downloaded into your local public folder located inside this project. The
-folder is named after the "name" argument. For example, here's how to
+folder is named after the "repo" argument. For example, here's how to
 synchronize the Epel repository.
 
 ```bash
-./bin/repos init epel -u https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
+./bin/repos init -r epel -u https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
 ```
 
 ## Start
