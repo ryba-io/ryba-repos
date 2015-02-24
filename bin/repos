@@ -1,4 +1,4 @@
 #!/bin/bash
 cd $(dirname "${BASH_SOURCE}")/..
 
-node lib/repos.js $@
+node lib/cli.js $@
