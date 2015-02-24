@@ -39,58 +39,57 @@ setPort = (repo, port) ->
   fs.writeFile "#{dirpath}/config.json", JSON.stringify(config, null, 2)
   return port
 
-buildAssetsFiles = (repo, u, config, next) ->
-  url_path = url.parse(u).pathname
+build_assets = (repo, config) ->
+  url_path = url.parse(repo.url).pathname
   url_name = url_path.split '/'
   url_name = url_name[url_name.length-1]
-  repopath = "#{dirpath}/#{repo}"
+  repopath = "#{dirpath}/#{repo.name}"
   buf  = '#!/bin/bash\n'
   buf += 'set -e\n\n'
   buf += 'yum clean expire-cache\n'
-  buf += "wget -nv #{u} -O /etc/yum.repos.d/#{url_name}\n"
+  buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
-  Object.keys(config).forEach((element, key, _array) ->
+  for key, element of config
     path = url.parse(config[element].baseurl).pathname
     buf += "\n# [#{element}]\n"
     buf += "mkdir -p /var/ryba#{path}\n"
     buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
     buf += "createrepo /var/ryba#{path}\n"
-  )
-  fs.writeFile "#{repopath}/init", buf, () ->
-    fs.chmod "#{repopath}/init", 0o755, next
 
-syncRepo = (repo, u, port) ->
-  repopath = "#{dirpath}/#{repo}"
-  fs.exists "#{repopath}/init", (exists) ->
-    do_end = () ->
-      exec """
-      if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
-      docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer
-      """, (err, stdout, stderr) ->
-        return console.log stderr if err
-        dockerRun repo, port
-    if exists and not u?
-      do_end()
-    else
-      return Error 'Cannot create repo without remote repo url' unless u? 
-      options = {url: u}
-      http options, (err, response, body) ->
-        return console.log err if err
-        fs.mkdir repopath, (err) ->
-          return console.log err if err and err.code isnt 'EEXIST'
-          fs.writeFile "#{repopath}/repo", body, (err) ->
-            return console.log err if err
-            ini.parse "#{repopath}/repo", (err, inidata) ->
-              return console.log err if err
-              buildAssetsFiles repo, u, inidata, do_end
-
-sync = (repos, urls, ports) ->
+sync = (repos, callback) ->
   return Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
   return Error "repos number (#{repos.length}) and ports number (#{ports?.length}) don't match" if ports? and repos.length isnt ports.length
   each(repos)
   .parallel true
-  .on 'item', (repo, index, next) ->
-    syncRepo repo, urls?[index], ports?[index]
+  .on 'item', (repo, next) ->
+    ports = []
+    # syncRepo repo, urls?[index], ports?[index]
+    repopath = "#{dirpath}/#{repo.name}"
+    do_init = ->
+      fs.exists "#{repopath}/init", (exists) ->
+        return do_end() if exists #and not repo.url
+        return Error 'Cannot create repo without remote repo url' unless repo.url? 
+        http url: repo.url, (err, response, body) ->
+          return callback err if err
+          fs.mkdir repopath, (err) ->
+            return callback err if err and err.code isnt 'EEXIST'
+            fs.writeFile "#{repopath}/repo", body, (err) ->
+              return callback err if err
+              ini.parse "#{repopath}/repo", (err, inidata) ->
+                return callback err if err
+                data = build_assets repo.name, repo.url, inidata
+                fs.writeFile "#{repopath}/init", data, (err) ->
+                  return callback err if err
+                  fs.chmod "#{repopath}/init", 0o0755, (err) ->
+                    return callback err if err
+                    do_end()
+    do_end = ->
+      exec """
+      if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
+      docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer
+      """, (err, stdout, stderr) ->
+        next err
+    do_init()
   .on 'both', (err) ->
     if err then console.log 'Finished with errors :', err.message else console.log 'Finished successfully !'
 
@@ -185,12 +184,12 @@ params = parameters
       shortcut: 'u'
       required: false
       description: 'the url(s) of the repo(s)'
-    ,
-      name: 'port'
-      shortcut: 'p'
-      type: 'array'
-      required: false
-      description: 'force port value'
+    # ,
+    #   name: 'port'
+    #   shortcut: 'p'
+    #   type: 'array'
+    #   required: false
+    #   description: 'force port value'
     ]
   ,
     name: 'start'
@@ -245,7 +244,12 @@ arg = params.parse argTab
 switch arg.command
   when 'help' then console.log params.help arg.name
   when 'list' then list arg.repo, (err, dir) -> console.log file for file in dir
-  when 'sync' then sync arg.repo, arg.url, arg.port
+  when 'sync'
+    {repo, url} = arg
+    throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
+    repo = for name, i in repo
+      name: name, url: url[i]
+    sync repo, (err) -> console.log err if err
   when 'start' then start arg.repo, arg.port
   when 'stop' then stop arg.repo
   when 'rm' then del arg.repo
