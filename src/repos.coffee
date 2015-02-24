@@ -39,7 +39,7 @@ setPort = (repo, port) ->
   fs.writeFile "#{dirpath}/config.json", JSON.stringify(config, null, 2)
   return port
 
-buildAssetsFiles = (repo,u,config, next) ->
+buildAssetsFiles = (repo, u, config, next) ->
   url_path = url.parse(u).pathname
   url_name = url_path.split '/'
   url_name = url_name[url_name.length-1]
@@ -57,14 +57,17 @@ buildAssetsFiles = (repo,u,config, next) ->
     buf += "createrepo /var/ryba#{path}\n"
   )
   fs.writeFile "#{repopath}/init", buf, () ->
-    fs.chmod "#{repopath}/init", next
+    fs.chmod "#{repopath}/init", 0o755, next
 
 syncRepo = (repo, u, port) ->
   repopath = "#{dirpath}/#{repo}"
   fs.exists "#{repopath}/init", (exists) ->
     do_end = () ->
-      exec "docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer", (r_err, r_stdout, r_stderr) ->
-        if r_err then console.log r_stderr
+      exec """
+      if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
+      docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer
+      """, (err, stdout, stderr) ->
+        return console.log stderr if err
         dockerRun repo, port
     if exists and not u?
       do_end()
@@ -72,9 +75,14 @@ syncRepo = (repo, u, port) ->
       return Error 'Cannot create repo without remote repo url' unless u? 
       options = {url: u}
       http options, (err, response, body) ->
-        ini.parse body, (err, inidata) ->
-          fs.mkdir repopath, () ->
-            buildAssetsFiles repo, u, inidata, do_end
+        return console.log err if err
+        fs.mkdir repopath, (err) ->
+          return console.log err if err and err.code isnt 'EEXIST'
+          fs.writeFile "#{repopath}/repo", body, (err) ->
+            return console.log err if err
+            ini.parse "#{repopath}/repo", (err, inidata) ->
+              return console.log err if err
+              buildAssetsFiles repo, u, inidata, do_end
 
 sync = (repos, urls, ports) ->
   return Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
@@ -88,7 +96,10 @@ sync = (repos, urls, ports) ->
 
 dockerExec = (action, repo, callback) ->
   console.log action, repo
-  exec "docker #{action} repo_#{repo}", callback
+  exec """
+  if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
+  docker #{action} repo_#{repo}
+  """, callback
 
 dockerRun = (repo, port, callback) ->
   console.log "run new container: #{repo}"
