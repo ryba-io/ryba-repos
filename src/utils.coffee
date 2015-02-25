@@ -39,7 +39,10 @@ exports.docker_ps = (obj, callback) ->
   if arguments.length is 1
     callback = obj
     obj = false
-  exec "docker ps -a", (err, stdout, stderr) ->
+  child = exec """
+  if command -v boot2docker >/dev/null; then boot2docker up >/dev/null 2>&1 && $(boot2docker shellinit); fi
+  docker ps -a
+  """, (err, stdout, stderr) ->
     return callback err if err
     column_names = []
     column_length = []
@@ -62,6 +65,8 @@ exports.docker_ps = (obj, callback) ->
       infos[info.names] = info
     unless obj then infos = for _, info of infos then info
     callback null, infos
+  # child.stdout.pipe process.stdout #if options.log
+  # child.stderr.pipe process.stderr #if options.log
 
 exports.lines = (str) ->
   str.split /\r\n|[\n\r\u0085\u2028\u2029]/g

@@ -6,6 +6,11 @@ repos = require './repos'
 params = parameters
   name: 'repos'
   description: 'Install and sync RHEL/CentOS repositories'
+  options: [
+    name: 'directory'
+    shortcut: 'd'
+    description: 'Directory storing the repository files.'
+  ]
   commands: [
     name: 'list'
     description: 'list all the installed repositories'
@@ -65,12 +70,12 @@ params = parameters
       description: 'the repo(s) to delete'
     ]
   ]
-arg = params.parse()
-
-switch arg.command
-  when 'help' then console.log params.help arg.name
+args = params.parse()
+switch args.command
+  when 'help' then console.log params.help args.name
   when 'list'
-    repos.list arg.repo, (err, repos) ->
+    repos(args).list args.repo, (err, repos) ->
+      return console.log err if err
       for repo in repos
         process.stdout.write repo.name
         process.stdout.write " [#{repo.port}]"
@@ -78,21 +83,21 @@ switch arg.command
         process.stdout.write " Not registered" unless repo.docker.status
         process.stdout.write '\n'
   when 'sync'
-    {repo, url} = arg
+    {repo, url} = args
     url ?= []
     throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
     repo = for name, i in repo
       name: name, url: url[i]
-    repos.sync repo, (err) -> console.log err if err
+    repos(args).sync repo, (err) -> console.log err if err
   when 'start'
-    {repo, port} = arg
+    {repo, port} = args
     repo ?= []
     port ?= []
     throw Error "Incoherent Arguments Length" if port.length and repo.length isnt port.length
     repo = for name, i in repo
       name: name, port: port[i]
-    repos.start repo, (err) -> console.log err if err
+    repos(args).start repo, (err) -> console.log err if err
   when 'stop'
-    repos.stop arg.repo, (err) -> console.log err if err
+    repos(args).stop args.repo, (err) -> console.log err if err
   when 'remove'
-    repos.remove arg.repo, (err) -> console.log err if err
+    repos(args).remove args.repo, (err) -> console.log err if err
