@@ -1,6 +1,6 @@
 {
   "name": "ryba-repos",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Ryba repository handler for ryba working environment",
   "dependencies": {
     "parameters": "latest",
