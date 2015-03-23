@@ -12,8 +12,8 @@ exports.build_assets = (repo, config) ->
   buf += 'yum clean expire-cache\n'
   buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
-  for key, element of config
-    path = url.parse(config[element].baseurl).pathname
+  for key, element of config.repos
+    path = url.parse(config.repos[element].baseurl).pathname
     buf += "\n# [#{element}]\n"
     buf += "mkdir -p /var/ryba#{path}\n"
     buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"

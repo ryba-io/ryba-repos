@@ -38,7 +38,7 @@ class Repos
         dirs = multimatch dirs, names
         repos = {}
         for dir in dirs
-          repos[dir] = name: dir, port: config[dir]?.port
+          repos[dir] = name: dir, port: config.repos[dir]?.port
         utils.docker_ps true, (err, infos) =>
           return callback err if err
           for name, repo of repos
@@ -54,9 +54,9 @@ class Repos
       unless repo.port?
         repo.port = config.port_inc++
         changed = true
-      else  if config[repo.name]?.port isnt repo.port?
-        config[repo.name] ?= {}
-        config[repo.name].port = repo.port
+      else  if config.repos[repo.name]?.port isnt repo.port?
+        config.repos[repo.name] ?= {}
+        config.repos[repo.name].port = repo.port
         changed = true
       return callback() unless changed
       fs.writeFile "#{@options.directory}/config.json", JSON.stringify(config, null, 2), (err) =>
