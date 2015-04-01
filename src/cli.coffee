@@ -7,8 +7,13 @@ params = parameters
   name: 'repos'
   description: 'Install and sync RHEL/CentOS repositories'
   options: [
-    name: 'directory'
+    name: 'output'
+    shortcut: 'o'
+    description: 'Directory storing the repository files.'
+  ,
+    name: 'debug'
     shortcut: 'd'
+    type: 'boolean'
     description: 'Directory storing the repository files.'
   ]
   commands: [
@@ -88,6 +93,7 @@ switch args.command
     throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
     repo = for name, i in repo
       name: name, url: url[i]
+    console.log repo
     repos(args).sync repo, (err) -> console.log err if err
   when 'start'
     {repo, port} = args

@@ -4,7 +4,7 @@ fs = require 'fs'
 path = require 'path'
 rmr = require 'remove'
 multimatch = require 'multimatch'
-exec = require('child_process').exec
+exec = require './exec'
 each = require 'each'
 url = require 'url'
 ini = require 'node-ini'
@@ -20,6 +20,7 @@ class Repos
     @options.directory ?= './public'
     @options.directory = path.resolve process.cwd(), @options.directory
     @options.log ?= true
+    # console.log @options
 
   list: (repos, obj, callback) ->
     if arguments.length is 2
@@ -82,7 +83,7 @@ class Repos
                 return callback err if err
                 ini.parse "#{repopath}/repo", (err, inidata) =>
                   return callback err if err
-                  data = utils.build_assets repo.name, repo.url, inidata
+                  data = utils.build_assets repo, inidata
                   fs.writeFile "#{repopath}/init", data, (err) =>
                     return callback err if err
                     fs.chmod "#{repopath}/init", 0o0755, (err) =>
@@ -92,8 +93,7 @@ class Repos
         exec """
         if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
         docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer
-        """, (err, stdout, stderr) =>
-          next err
+        """, @options.debug, (err, stdout, stderr) -> next err
       do_init()
     .then callback
 

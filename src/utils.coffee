@@ -6,18 +6,22 @@ exports.build_assets = (repo, config) ->
   url_path = url.parse(repo.url).pathname
   url_name = url_path.split '/'
   url_name = url_name[url_name.length-1]
-  repopath = "#{dirpath}/#{repo.name}"
   buf  = '#!/bin/bash\n'
   buf += 'set -e\n\n'
   buf += 'yum clean expire-cache\n'
   buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
-  for key, element of config.repos
-    path = url.parse(config.repos[element].baseurl).pathname
-    buf += "\n# [#{element}]\n"
-    buf += "mkdir -p /var/ryba#{path}\n"
-    buf += "reposync -p /var/ryba#{path} --repoid=#{element}\n"
-    buf += "createrepo /var/ryba#{path}\n"
+  console.log '------------------'
+  console.log repo
+  console.log config
+  for key, element of config
+    directory = url.parse(element.baseurl).pathname
+    buf += "\n# [#{element.name}]\n"
+    buf += "mkdir -p /var/ryba#{directory}\n"
+    buf += "reposync -p /var/ryba#{directory} --repoid=#{key}\n"
+    buf += "createrepo /var/ryba#{directory}\n"
+  console.log buf
+  buf
 
 exports.docker_exec = (repo, action, callback) ->
   exec """
@@ -65,8 +69,6 @@ exports.docker_ps = (obj, callback) ->
       infos[info.names] = info
     unless obj then infos = for _, info of infos then info
     callback null, infos
-  # child.stdout.pipe process.stdout #if options.log
-  # child.stderr.pipe process.stderr #if options.log
 
 exports.lines = (str) ->
   str.split /\r\n|[\n\r\u0085\u2028\u2029]/g
