@@ -11,33 +11,13 @@ exports.build_assets = (repo, config) ->
   buf += 'yum clean expire-cache\n'
   buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
-  console.log '------------------'
-  console.log repo
-  console.log config
   for key, element of config
     directory = url.parse(element.baseurl).pathname
     buf += "\n# [#{element.name}]\n"
     buf += "mkdir -p /var/ryba#{directory}\n"
     buf += "reposync -p /var/ryba#{directory} --repoid=#{key}\n"
     buf += "createrepo /var/ryba#{directory}\n"
-  console.log buf
   buf
-
-exports.docker_exec = (repo, action, callback) ->
-  exec """
-  if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
-  docker #{action} #{repo}
-  """, callback
-
-exports.docker_run = (repo, pubdir, callback) ->
-  exec """
-  if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
-  docker run -d \
-    --name=#{repo.name} \
-    -v #{pubdir}/#{repo.name}:/usr/local/apache2/htdocs/ \
-    -p #{repo.port}:80 \
-    httpd
-  """, callback
 
 exports.docker_ps = (obj, callback) ->
   if arguments.length is 1

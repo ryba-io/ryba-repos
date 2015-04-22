@@ -17,16 +17,14 @@ cd ryba-repos
 docker build -t ryba_repos/syncer .
 ```
 
-## Init
+## Sync
 
-`repos init -r {name} -u {url}`
+`repos sync -r {name} -u {url}`
 
 *   -r, --repo   
     Name of the repository.   
 *   -u, --url   
-    URL from where to fetch the repository definition file.    
-*   -p, --port   
-    Port use to serve the repository locally.   
+    URL from where to fetch the repository definition file.   
 
 Synchronize a local repo using a temporary Docker container. The repository are
 downloaded into your local public folder located inside this project. The
@@ -34,7 +32,9 @@ folder is named after the "repo" argument. For example, here's how to
 synchronize the Epel repository.
 
 ```bash
-./bin/repos init -r epel -u https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
+./bin/repos sync \
+  -r repo_ambari-2.0.0 \
+  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.0/ambari.repo
 ```
 
 ## Start

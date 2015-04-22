@@ -4,11 +4,12 @@ fs = require 'fs'
 path = require 'path'
 rmr = require 'remove'
 multimatch = require 'multimatch'
-exec = require './exec'
 each = require 'each'
 url = require 'url'
 ini = require 'node-ini'
 http = require 'request'
+db = require './db'
+docker = require './docker'
 utils = require './utils'
 
 module.exports = (options) ->
@@ -20,16 +21,16 @@ class Repos
     @options.directory ?= './public'
     @options.directory = path.resolve process.cwd(), @options.directory
     @options.log ?= true
-    # console.log @options
+    @db = db @options.directory
+    @docker = docker @options.debug
+
 
   list: (repos, obj, callback) ->
     if arguments.length is 2
       callback = obj
       obj = false
-    fs.readFile "#{@options.directory}/config.json", 'utf8', (err, config) =>
+    @db.get (err, config) =>
       return callback err if err
-      try config = JSON.parse config
-      catch err then return callback err
       fs.readdir @options.directory, (err, dirs) =>
         return callback err if err
         if repos?.length
@@ -47,21 +48,26 @@ class Repos
           unless obj then repos = for _, repo of repos then repo
           callback null, repos
 
-  setPort: (repo, callback) ->
-    fs.readFile "#{@options.directory}/config.json", 'utf8', (err, config) =>
-      return callback err if err and err.code isnt 'ENOENT'
-      config = if err then {} else JSON.parse config 
-      config.port_inc ?= 10180
-      unless repo.port?
-        repo.port = config.port_inc++
+  setPort: (name, port, callback) ->
+    # {name, port} = repo
+    @db.get (err, config) =>
+      return err if err
+      unless config.repos[name]?
+        config.repos[name] = {}
         changed = true
-      else  if config.repos[repo.name]?.port isnt repo.port?
-        config.repos[repo.name] ?= {}
-        config.repos[repo.name].port = repo.port
+      unless port?
+        ports_used = for k, v of config.repos then v.port
+        port = config.port_inc
+        while port in ports_used
+          port++
+        config.repos[name].port = port
+        changed = true
+      else if config.repos[name].port isnt port
+        config.repos[name].port = port
         changed = true
       return callback() unless changed
-      fs.writeFile "#{@options.directory}/config.json", JSON.stringify(config, null, 2), (err) =>
-        callback err
+      @db.set config, callback
+   
 
   sync: (repos, callback) ->
     return Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
@@ -90,10 +96,9 @@ class Repos
                       return callback err if err
                       do_end()
       do_end = =>
-        exec """
-        if command -v boot2docker; then boot2docker up && $(boot2docker shellinit); fi
-        docker run -v #{repopath}:/var/ryba --rm=true ryba_repos/syncer
-        """, @options.debug, (err, stdout, stderr) -> next err
+        @setPort repo.name, repo.port, (err) =>
+          return next err if err
+          @docker.sync repopath, (err, stdout, stderr) -> next err
       do_init()
     .then callback
 
@@ -106,20 +111,18 @@ class Repos
       .parallel true
       .run (repo, next) =>
         unless repo.docker.names # Unregistered container
-          utils.docker_run repo, @options.directory, (err) =>
+          @docker.run repo, @options.directory, (err) =>
             return next err
         else if /^Up/.test repo.docker.status # Running container
           return next() if "#{repo.port}" is /([\d]+)\->80/.exec(repo.docker.ports)?[1]
-          return utils.docker_exec repo.name, 'stop', (err) =>
+          return @docker.stop repo.name, (err) =>
             return next err if err
-            utils.docker_exec repo.name, 'rm', (err) =>
+            @docker.rm repo.name, (err) =>
               return next err if err
-              utils.docker_run repo, @options.directory, (err) =>
-                return next err if err
-                setPort repo, (err) =>
-                  next err
+              @docker.run repo, @options.directory, (err) =>
+                return next err
         else # Stoped container
-          utils.docker_exec repo.name, 'start', (err) =>
+          @docker.start repo.name, (err) =>
             next err
       .then (err) =>
         callback err
@@ -130,15 +133,16 @@ class Repos
       each repos
       .run (repo, next) =>
          return next() unless /^Up/.test repo.docker?.status
-         utils.docker_exec repo.name, 'stop', next
+         @docker.stop repo.name, next
       .then callback
 
   remove: (repos, callback) ->
     each repos
     .parallel true
     .run (repo, next) =>
-      utils.docker_exec repo, 'rm', (err) =>
+      @docker.rm repo, (err) =>
         return next err if err
+        return next() unless @options.purge
         rmr.remove "#{@options.directory}/#{repo}", next
     .then callback
 

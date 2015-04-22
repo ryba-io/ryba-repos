@@ -33,13 +33,18 @@ params = parameters
       type: 'array'
       shortcut: 'r'
       required: true
-      description: 'repo(s) to initialize'
+      description: 'Repositories to initialize'
     ,
       name: 'url'
       type: 'array'
       shortcut: 'u'
       required: false
-      description: 'the url(s) of the repo(s)'
+      description: 'URLs of the repositories'
+    ,
+      name: 'port'
+      shortcut: 'p'
+      type: 'array'
+      description: 'Default port value'
     ]
   ,
     name: 'start'
@@ -48,7 +53,7 @@ params = parameters
       name: 'repo'
       type: 'array'
       shortcut: 'r'
-      description: 'the repo(s) to start. All by default'
+      description: 'Repositories to start. All by default'
     ,
       name: 'port'
       shortcut: 'p'
@@ -62,7 +67,7 @@ params = parameters
       name: 'repo'
       type: 'array'
       shortcut: 'r'
-      description: 'the repo(s) to stop. All by default'
+      description: 'Repositories to stop. All by default'
     ]
   ,
     name: 'remove'
@@ -72,7 +77,12 @@ params = parameters
       shortcut: 'r'
       type: 'array'
       required: true
-      description: 'the repo(s) to delete'
+      description: 'Repositories to delete from docker'
+    ,
+      name: 'purge'
+      shortcut: 'p'
+      type: 'boolean'
+      description: 'Remove the repository files'
     ]
   ]
 args = params.parse()
@@ -88,12 +98,11 @@ switch args.command
         process.stdout.write " Not registered" unless repo.docker.status
         process.stdout.write '\n'
   when 'sync'
-    {repo, url} = args
+    {repo, url, port} = args
     url ?= []
     throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
     repo = for name, i in repo
-      name: name, url: url[i]
-    console.log repo
+      name: name, url: url[i], port: port[i]
     repos(args).sync repo, (err) -> console.log err if err
   when 'start'
     {repo, port} = args
