@@ -1,4 +1,4 @@
 #!/bin/bash
 cd $(dirname "${BASH_SOURCE}")/..
 
-node lib/cli.js $@
+./node_modules/.bin/coffee lib/cli.coffee $@

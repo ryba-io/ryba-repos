@@ -13,8 +13,5 @@
   },
   "devDependencies": {
     "coffee-script": "latest"
-  },
-  "scripts": {
-    "coffee": "./node_modules/.bin/coffee -b -o lib src"
   }
 }

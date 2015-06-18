@@ -41,7 +41,7 @@ class Repos
         repos = {}
         for dir in dirs
           repos[dir] = name: dir, port: config.repos[dir]?.port
-        utils.docker_ps true, (err, infos) =>
+        @docker.ps true, (err, infos) =>
           return callback err if err
           for name, repo of repos
             repo.docker = infos[name] or {}
