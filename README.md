@@ -14,7 +14,7 @@ This chapter assumes that you have already installed Docker and Node.js.
 ```bash
 git clone https://github.com/ryba-io/ryba-repos
 cd ryba-repos
-docker build -t ryba_repos/syncer .
+docker build -t ryba/repos .
 ```
 
 ## Sync
