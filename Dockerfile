@@ -1,4 +1,4 @@
-# (sudo) docker build -t ryba_repos/syncer .
+# (sudo) docker build -t ryba/repos_sync .
 FROM centos:centos6
 
 RUN yum clean expire-cache

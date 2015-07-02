@@ -7,7 +7,7 @@ module.exports = (debug) ->
   sync: (repopath, callback) ->
     exec """
     if command -v docker-machine >/dev/null; then docker-machine start >/dev/null && eval "$(docker-machine env dev)"; fi
-    docker run -v #{repopath}:/var/ryba --rm=true ryba/repos
+    docker run -v #{repopath}:/var/ryba --rm=true ryba/repos_sync
     """, debug, callback
 
   start: (repo, callback) ->
