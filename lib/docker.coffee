@@ -12,26 +12,26 @@ module.exports = (debug) ->
 
   start: (repo, callback) ->
     exec """
-    if command -v docker-machine >/dev/null; then docker-machine start >/dev/null && eval "$(docker-machine env dev)"; fi
+    if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
     docker start #{repo}
     """, debug, callback
 
   stop: (repo, callback) ->
     exec """
-    if command -v docker-machine >/dev/null; then docker-machine start >/dev/null && eval "$(docker-machine env dev)"; fi
+    if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
     docker stop #{repo}
     """, debug, callback
 
   rm: (repo, callback) ->
     exec """
-    iif command -v docker-machine >/dev/null; then docker-machine start >/dev/null && eval "$(docker-machine env dev)"; fi
+    if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
     docker rm #{repo}
     """, debug, callback
 
   run: (repo, pubdir, callback) ->
     throw Error 'Invalid arguments' unless repo.name? and repo.port?
     exec """
-    if command -v docker-machine >/dev/null; then docker-machine start >/dev/null && eval "$(docker-machine env dev)"; fi
+    if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
     docker run -d \
       --name=#{repo.name} \
       -v #{pubdir}/#{repo.name}:/usr/local/apache2/htdocs/ \
@@ -45,7 +45,7 @@ module.exports = (debug) ->
       callback = obj
       obj = false
     exec """
-    if command -v docker-machine >/dev/null; then docker-machine start >/dev/null && eval "$(docker-machine env dev)"; fi
+    if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
     docker ps -a
     """, debug, (err, stdout, stderr) ->
       return callback err if err
@@ -70,8 +70,3 @@ module.exports = (debug) ->
         infos[info.names] = info
       unless obj then infos = for _, info of infos then info
       callback null, infos
-
-
-
-
-
