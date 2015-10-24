@@ -52,4 +52,6 @@ bin/repos start repository-name
 bin/repos start
 ```
 
+## Recipes
 
+./bin/repos -d sync -r repo_mongodb-org-3.0 -u /Users/wdavidw/www/projects/ryba/ryba-repos/repos/mongodb-org-3.0.repo
