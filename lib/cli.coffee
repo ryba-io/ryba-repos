@@ -102,7 +102,7 @@ switch args.command
     url ?= []
     throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
     repo = for name, i in repo
-      name: name, url: url[i], port: port[i]
+      name: name, url: url[i]
     repos(args).sync repo, (err) -> console.log err if err
   when 'start'
     {repo, port} = args

@@ -4,6 +4,7 @@
   "description": "Ryba repository handler for ryba working environment",
   "dependencies": {
     "each": "latest",
+    "mecano": "0.5.0",
     "multimatch": "latest",
     "node-ini": "latest",
     "parameters": "latest",

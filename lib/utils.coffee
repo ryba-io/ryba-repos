@@ -9,7 +9,7 @@ exports.build_assets = (repo, config) ->
   buf  = '#!/bin/bash\n'
   buf += 'set -e\n\n'
   buf += 'yum clean expire-cache\n'
-  buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
+  # buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
   for key, element of config
     directory = url.parse(element.baseurl).pathname
