@@ -56,36 +56,34 @@ class Repos
     .run (repo, next) =>
       ports = []
       repopath = "#{@options.directory}/#{repo.name}"
-      do_init = =>
-        mecano
-        .mkdir
-          destination: repopath
-        .download # Write repo file
-          source: "#{repo.url}"
-          destination: "#{repopath}/repo"
-          if: /^http.*/.test repo.url
-        , (err, status) ->
-          repo.url = "#{repopath}/repo" unless err
-        .copy # Write repo file
-          source: "#{repo.url}"
-          destination: "#{repopath}/repo"
-          unless: /^http.*/.test repo.url
-        .call # Write init docker script
-          handler: (_, callback) ->
-            ini.parse "#{repopath}/repo", (err, data) =>
-              return callback err if err
-              data = utils.build_assets repo, data
-              @write
-                destination: "#{repopath}/init"
-                content: data
-                mode: 0o0755
-              @then callback
-        .then (err, status) ->
-          return callback err if err
-          do_end()
-      do_end = =>
-        @docker.sync repopath, (err, stdout, stderr) -> next err
-      do_init()
+      mecano
+      .mkdir
+        destination: repopath
+      .download # Write repo file
+        source: "#{repo.url}"
+        destination: "#{repopath}/repo"
+        if: /^http.*/.test repo.url
+      , (err, status) ->
+        repo.url = "#{repopath}/repo" unless err
+      .copy # Write repo file
+        source: "#{repo.url}"
+        destination: "#{repopath}/repo"
+        unless: /^http.*/.test repo.url
+      .call # Write init docker script
+        handler: (_, callback) ->
+          ini.parse "#{repopath}/repo", (err, data) =>
+            return callback err if err
+            data = utils.build_assets repo, data
+            @write
+              destination: "#{repopath}/init"
+              content: data
+              mode: 0o0755
+            @then callback
+      .docker_run
+        image: 'ryba/repos_sync'
+        machine: @options.machine
+        volume: "#{repopath}:/var/ryba"
+      .then next
     .then callback
 
   start: (repos, callback) ->

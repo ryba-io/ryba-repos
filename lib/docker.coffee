@@ -4,15 +4,6 @@ utils = require './utils'
 
 module.exports = (debug) ->
 
-  sync: (repopath, callback) ->
-    exec """
-    if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
-    if ! docker images | grep ryba/repos_sync; then
-      docker build -t ryba/repos_sync docker
-    fi
-    docker run -v #{repopath}:/var/ryba -v #{repopath}/repo:/etc/yum.repos.d/import.repo --rm=true ryba/repos_sync
-    """, debug, callback
-
   start: (repo, callback) ->
     exec """
     if command -v docker-machine >/dev/null; then docker-machine start ryba >/dev/null && eval "$(docker-machine env ryba)"; fi
