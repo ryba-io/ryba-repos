@@ -25,7 +25,6 @@ class Repos
     @db = db @options.directory
     @docker = docker @options.debug
 
-
   list: (repos, obj, callback) ->
     if arguments.length is 2
       callback = obj
@@ -65,10 +64,12 @@ class Repos
           source: "#{repo.url}"
           destination: "#{repopath}/repo"
           if: /^http.*/.test repo.url
+        , (err, status) ->
+          repo.url = "#{repopath}/repo" unless err
         .copy # Write repo file
           source: "#{repo.url}"
           destination: "#{repopath}/repo"
-          not_if: /^http.*/.test repo.url
+          unless: /^http.*/.test repo.url
         .call # Write init docker script
           handler: (_, callback) ->
             ini.parse "#{repopath}/repo", (err, data) =>
