@@ -2,6 +2,11 @@
 util = require 'util'
 parameters = require 'parameters'
 repos = require './repos'
+PrettyError = require('pretty-error')
+pe = new PrettyError()
+error = (err) ->
+  console.log pe.render err if err
+  return !!err
 
 params = parameters
   name: 'repos'
@@ -90,7 +95,7 @@ switch args.command
   when 'help' then console.log params.help args.name
   when 'list'
     repos(args).list args.repo, (err, repos) ->
-      return console.log err if err
+      return if error err
       for repo in repos
         process.stdout.write repo.name
         process.stdout.write " [#{repo.port}]"
@@ -103,7 +108,7 @@ switch args.command
     throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
     repo = for name, i in repo
       name: name, url: url[i]
-    repos(args).sync repo, (err) -> console.log err if err
+    repos(args).sync repo, error
   when 'start'
     {repo, port} = args
     repo ?= []
@@ -111,8 +116,8 @@ switch args.command
     throw Error "Incoherent Arguments Length" if port.length and repo.length isnt port.length
     repo = for name, i in repo
       name: name, port: port[i]
-    repos(args).start repo, (err) -> console.log err if err
+    repos(args).start repo, error
   when 'stop'
-    repos(args).stop args.repo, (err) -> console.log err if err
+    repos(args).stop args.repo, error
   when 'remove'
-    repos(args).remove args.repo, (err) -> console.log err if err
+    repos(args).remove args.repo, error
