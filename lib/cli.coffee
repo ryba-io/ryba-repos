@@ -15,6 +15,16 @@ params = parameters
     shortcut: 'd'
     type: 'boolean'
     description: 'Directory storing the repository files.'
+  ,
+    name: 'machine'
+    shortcut: 'm'
+    type: 'string'
+    description: 'name of the docker machine to use (optional)' 
+  ,
+    name: 'container'
+    shortcut: 'c'
+    type: 'string'
+    description: 'override the container name. `ryba_repos` by default' 
   ]
   commands: [
     name: 'list'
@@ -45,10 +55,16 @@ params = parameters
       shortcut: 'p'
       type: 'array'
       description: 'Default port value'
+    , 
+      name: 'env'
+      shortcut: 'e'
+      type: 'array'
+      description: 'Set environment variables for sync container'
     ]
+    
   ,
     name: 'start'
-    description: 'Start Repo server(s) with Docker'
+    description: 'Start Repo server with Docker'
     options: [
       name: 'repo'
       type: 'array'
@@ -58,7 +74,7 @@ params = parameters
       name: 'port'
       shortcut: 'p'
       type: 'array'
-      description: 'force port value'
+      description: 'set port value on first start'
     ]
   ,
     name: 'stop'
@@ -75,9 +91,7 @@ params = parameters
     options: [
       name: 'repo'
       shortcut: 'r'
-      type: 'array'
-      required: true
-      description: 'Repositories to delete from docker'
+      type: 'string'
     ,
       name: 'purge'
       shortcut: 'p'
@@ -89,14 +103,14 @@ args = params.parse()
 switch args.command
   when 'help' then console.log params.help args.name
   when 'list'
-    repos(args).list args.repo, (err, repos) ->
+    repos(args).list (err, repos) ->
       return console.log err if err
-      for repo in repos
-        process.stdout.write repo.name
-        process.stdout.write " [#{repo.port}]"
-        process.stdout.write " #{repo.docker.status}" if repo.docker.status
-        process.stdout.write " Not registered" unless repo.docker.status
-        process.stdout.write '\n'
+      console.log repo for repo in repos
+      # process.stdout.write repo.name
+      # process.stdout.write " [#{repo.port}]"
+      # process.stdout.write " #{repo.docker.status}" if repo.docker.status
+      # process.stdout.write " Not registered" unless repo.docker.status
+      # process.stdout.write '\n'
   when 'sync'
     {repo, url, port} = args
     url ?= []
@@ -105,14 +119,8 @@ switch args.command
       name: name, url: url[i]
     repos(args).sync repo, (err) -> console.log err if err
   when 'start'
-    {repo, port} = args
-    repo ?= []
-    port ?= []
-    throw Error "Incoherent Arguments Length" if port.length and repo.length isnt port.length
-    repo = for name, i in repo
-      name: name, port: port[i]
-    repos(args).start repo, (err) -> console.log err if err
+    repos(args).start (err) -> console.log err if err
   when 'stop'
-    repos(args).stop args.repo, (err) -> console.log err if err
+    repos(args).stop (err) -> console.log err if err
   when 'remove'
     repos(args).remove args.repo, (err) -> console.log err if err

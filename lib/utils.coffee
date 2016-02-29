@@ -19,5 +19,16 @@ exports.build_assets = (repo, config) ->
     buf += "createrepo /var/ryba#{directory}\n"
   buf
 
+# Rewrite base url of the .repo file in order to map the public directory repo-base layout
+# eg 'https://repo.mongodb.org/yum/redhat/6/mongodb-org/3.2/x86_64/' is replaced by
+# 'https://repo.mongodb.org/mongodb_3.2/yum/redhat/6/mongodb-org/3.2/x86_64/'
+exports.buid_custom_repo_file = (repo, config) ->
+  for _,conf of config
+    infos = url.parse(conf.baseurl)
+    conf.mirrorlist = conf.mirrorlist.replace "#{infos.hostname}" , "#{infos.hostname}/#{repo.name}" if conf.mirrorlist
+    conf.baseurl = conf.baseurl.replace "#{infos.hostname}" , "#{infos.hostname}/#{repo.name}" if conf.baseurl
+  config
+    
+
 exports.lines = (str) ->
   str.split /\r\n|[\n\r\u0085\u2028\u2029]/g

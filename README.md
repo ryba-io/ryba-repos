@@ -31,6 +31,8 @@ docker build -t ryba/repos .
     Name of the repository.   
 *   -u, --url   
     URL from where to fetch the repository definition file.   
+*   -m, --machine   
+    Name of the docker machine to use, if docker machine is installed.
 
 Synchronize a local repo using a temporary Docker container. The repository are
 downloaded into your local public folder located inside this project. The
@@ -45,12 +47,19 @@ synchronize the Epel repository.
 
 ## Start
 
-Start a repo, all by default
+*   -m, --machine   
+    Name of the docker machine to use, if docker machine is installed.
+*   -c, --container   
+    Name of the docker container. 'ryba_repos' by default.
+*   -p, --port   
+    Port used to run the container the first time. 10800 by default.
+
 
 ```bash
-bin/repos start repository-name
 bin/repos start
+bin/repos -m 'ryba' start
 ```
+
 
 ## Recipes
 
