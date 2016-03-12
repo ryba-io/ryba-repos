@@ -88,7 +88,10 @@ class Repos
       .docker_run
         image: 'ryba/repos_sync'
         machine: @options.machine
-        volume: "#{repopath}:/var/ryba"
+        volume: [
+          "#{repopath}:/var/ryba"
+          "#{repos_dir}/#{repofile}:/etc/yum.repos.d/#{repofile}"
+        ]
         env: @options.env
       .then (err, status) ->
         return callback err if err
