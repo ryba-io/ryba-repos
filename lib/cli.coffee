@@ -2,6 +2,11 @@
 util = require 'util'
 parameters = require 'parameters'
 repos = require './repos'
+PrettyError = require('pretty-error')
+pe = new PrettyError()
+error = (err) ->
+  console.log pe.render err if err
+  return !!err
 
 params = parameters
   name: 'repos'
@@ -64,7 +69,7 @@ params = parameters
     
   ,
     name: 'start'
-    description: 'Start Repo server with Docker'
+    description: 'Start Repo server(s) with Docker'
     options: [
       name: 'repo'
       type: 'array'
@@ -103,24 +108,30 @@ args = params.parse()
 switch args.command
   when 'help' then console.log params.help args.name
   when 'list'
-    repos(args).list (err, repos) ->
-      return console.log err if err
-      console.log repo for repo in repos
-      # process.stdout.write repo.name
-      # process.stdout.write " [#{repo.port}]"
-      # process.stdout.write " #{repo.docker.status}" if repo.docker.status
-      # process.stdout.write " Not registered" unless repo.docker.status
-      # process.stdout.write '\n'
+    repos(args).list args.repo, (err, repos) ->
+      return if error err
+      for repo in repos
+        process.stdout.write repo.name
+        process.stdout.write " [#{repo.port}]"
+        process.stdout.write " #{repo.docker.status}" if repo.docker.status
+        process.stdout.write " Not registered" unless repo.docker.status
+        process.stdout.write '\n'
   when 'sync'
     {repo, url, port} = args
     url ?= []
     throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
     repo = for name, i in repo
       name: name, url: url[i]
-    repos(args).sync repo, (err) -> console.log err if err
+    repos(args).sync repo, error
   when 'start'
-    repos(args).start (err) -> console.log err if err
+    {repo, port} = args
+    repo ?= []
+    port ?= []
+    throw Error "Incoherent Arguments Length" if port.length and repo.length isnt port.length
+    repo = for name, i in repo
+      name: name, port: port[i]
+    repos(args).start repo, error
   when 'stop'
-    repos(args).stop (err) -> console.log err if err
+    repos(args).stop args.repo, error
   when 'remove'
-    repos(args).remove args.repo, (err) -> console.log err if err
+    repos(args).remove args.repo, error
