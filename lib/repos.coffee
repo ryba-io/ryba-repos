@@ -25,7 +25,6 @@ class Repos
     @options.directory = path.resolve process.cwd(), @options.directory
     @options.log ?= true
   
-  
   list: (callback) ->
     fs.readdir @options.directory, (err, dirs) =>
       return callback err if err
@@ -50,7 +49,12 @@ class Repos
       repos_dir = "#{@options.directory}/../repos"
       repofile = "#{repo.name}.repo"
       mecano
+        debug: @options.debug
       # write original file to repos/ directory (not executed if file already exists)
+      .docker_build
+        machine: @options.machine
+        image: 'ryba/repos_sync'
+        file: "#{__dirname}/../docker/Dockerfile"
       .mkdir
         destination: repopath
       .mkdir
@@ -65,27 +69,28 @@ class Repos
         destination: "#{repos_dir}/#{repofile}"
         unless: /^http.*/.test repo.url
           # destination: "#{repopath}/#{repo.name}.repo"
-      .call # Write init docker script
-        handler: (_, callback) ->
-          try 
-            ini.parse "#{repos_dir}/#{repofile}", (err, data) =>
-              return callback err if err
-              init_data = utils.build_assets repo, data
-              custom_repo = utils.buid_custom_repo_file repo, data
-              @write
-                destination: "#{repopath}/init"
-                content: init_data
-                mode: 0o0755
-              @ini
-                destination: "#{repopath}/../#{repofile}"
-                content: custom_repo
-                stringify: misc.ini.stringify_multi_brackets
-                indent: ''
-                separator: '='
-                comment: '#'
-                eof: true
-              @then callback
+      .call (_, callback) -> # Write init docker script
+        ini.parse "#{repos_dir}/#{repofile}", (err, data) =>
+          return callback err if err
+          init_data = utils.build_assets repo, data
+          custom_repo = utils.buid_custom_repo_file repo, data
+          console.log "#{repopath}:/var/ryba"
+          console.log "#{repos_dir}/#{repofile}:/etc/yum.repos.d/#{repofile}"
+          @write
+            destination: "#{repopath}/init"
+            content: init_data
+            mode: 0o0755
+          @write_ini
+            destination: "#{repopath}/../#{repofile}"
+            content: custom_repo
+            stringify: misc.ini.stringify_multi_brackets
+            indent: ''
+            separator: '='
+            comment: '#'
+            eof: true
+          @then callback
       .docker_run
+        # debug: true
         image: 'ryba/repos_sync'
         machine: @options.machine
         volume: [
@@ -93,6 +98,7 @@ class Repos
           "#{repos_dir}/#{repofile}:/etc/yum.repos.d/#{repofile}"
         ]
         env: @options.env
+        rm: true
       .then (err, status) ->
         return callback err if err
     .then callback
