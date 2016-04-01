@@ -20,7 +20,6 @@ eval "$(docker-machine env ryba)"
 docker build -t ryba/repos .
 ```
 
-
 /usr/bin/rsync -av --bwlimit=524 --exclude=repodata --exclude=i386 --exclude=debug --exclude=isos --delete rsync://rsync.gtlib.gatech.edu/centos/6.7 /Users/wdavidw/www/projects/ryba/ryba-repos/public/repo_centos/centos/temp
 
 ## Sync
@@ -40,9 +39,15 @@ folder is named after the "repo" argument. For example, here's how to
 synchronize the Epel repository.
 
 ```bash
+./bin/repos -m ryba -d sync \
+  -r epel \
+  -u repos/epel.repo
+./bin/repos -m ryba -d sync \
+  -r centos-6.7 \
+  -u repos/centos-6.7.repo
 ./bin/repos -d sync \
   -r ambari-2.2.0.0 \
-  -u  	http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.2.0.0/ambari.repo
+  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.2.0.0/ambari.repo
 ./bin/repos -d sync \
   -r hdp-2.3.4.0 \
   -u http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.4.0/hdp.repo
