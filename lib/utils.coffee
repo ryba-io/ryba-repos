@@ -3,16 +3,16 @@ url = require 'url'
 exec = require('child_process').exec
 
 exports.build_assets = (repo, config) ->
-  url_path = url.parse(repo.url).pathname
-  url_name = url_path.split '/'
-  url_name = url_name[url_name.length-1]
+  # url_path = url.parse(repo.url).pathname
+  # url_name = url_path.split '/'
+  # url_name = url_name[url_name.length-1]
   buf  = '#!/bin/bash\n'
   buf += 'set -e\n\n'
   buf += 'yum clean expire-cache\n'
   # buf += "wget -nv #{repo.url} -O /etc/yum.repos.d/#{url_name}\n"
   buf += 'yum update -y\n'
   for key, element of config
-    directory = url.parse(element.baseurl).pathname
+    directory = url.parse(element.baseurl or element.mirrorlist).pathname
     buf += "\n# [#{element.name}]\n"
     buf += "mkdir -p /var/ryba#{directory}\n"
     buf += "reposync -p /var/ryba#{directory} --repoid=#{key}\n"
@@ -24,7 +24,7 @@ exports.build_assets = (repo, config) ->
 # 'https://repo.mongodb.org/mongodb_3.2/yum/redhat/6/mongodb-org/3.2/x86_64/'
 exports.buid_custom_repo_file = (repo, config) ->
   for _,conf of config
-    infos = url.parse(conf.baseurl)
+    infos = url.parse(conf.baseurl or conf.mirrorlist)
     conf.mirrorlist = conf.mirrorlist.replace "#{infos.hostname}" , "#{infos.hostname}/#{repo.name}" if conf.mirrorlist
     conf.baseurl = conf.baseurl.replace "#{infos.hostname}" , "#{infos.hostname}/#{repo.name}" if conf.baseurl
   config
