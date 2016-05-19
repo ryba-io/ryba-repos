@@ -7,6 +7,7 @@
     "mecano": "0.5.0",
     "multimatch": "latest",
     "node-ini": "latest",
+    "pad": "^1.0.0",
     "parameters": "latest",
     "pretty-error": "^2.0.0",
     "remove": "latest",
