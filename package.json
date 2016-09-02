@@ -2,6 +2,25 @@
   "name": "ryba-repos",
   "version": "0.0.2",
   "description": "Ryba repository handler for ryba working environment",
+  "author": "David Worms <david@adaltas.com>",
+  "bugs": {
+    "email": "open@adaltas.com",
+    "url": "http://github.com/ryba-io/ryba-repos/issues"
+  },
+  "contributors": [
+    {
+      "name": "David Worms",
+      "email": "david@adaltas.com"
+    },
+    {
+      "name": "Pierre Sauvage",
+      "email": "pierre@adaltas.com"
+    },
+    {
+      "name": "Lucas Bakalian",
+      "email": "lucas@adaltas.com"
+    }
+  ],
   "dependencies": {
     "each": "latest",
     "mecano": "0.5.0",
@@ -16,5 +35,15 @@
   },
   "devDependencies": {
     "coffee-script": "latest"
-  }
+  },
+  "homepage": "https://github.com/ryba-io/ryba-repos",
+  "keywords": [
+    "centos",
+    "repo",
+    "repository",
+    "rhel",
+    "rpm",
+    "yum"
+  ],
+  "license": "BSD-3-Clause"
 }
