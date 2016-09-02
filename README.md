@@ -46,11 +46,11 @@ synchronize the Epel repository.
   -r centos-6.7 \
   -u repos/centos-6.7.repo
 ./bin/repos -d sync \
-  -r ambari-2.2.0.0 \
-  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.2.0.0/ambari.repo
-./bin/repos -m ryba -d sync \
-  -r hdp-2.4.0.0 \
-  -u http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.4.0.0/hdp.repo
+  -r ambari-2.4.0.1 \
+  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.4.0.1/ambari.repo
+./bin/repos -d sync \
+  -r hdp-2.5.0.0 \
+  -u http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.0.0/hdp.repo
 ```
 
 ## Start
