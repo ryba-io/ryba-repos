@@ -39,8 +39,8 @@ class Repos
   # - write a .repo file containing the mirror informations with changed url (inside public)
   # - copy to repos folder the original .repo file
   sync: (repos, callback) ->
-    return Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
-    return Error "repos number (#{repos.length}) and ports number (#{ports?.length}) don't match" if ports? and repos.length isnt ports.length
+    return callback Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
+    return callback Error "repos number (#{repos.length}) and ports number (#{ports?.length}) don't match" if ports? and repos.length isnt ports.length
     each repos
     .parallel true
     .call (repo, next) =>
@@ -51,7 +51,7 @@ class Repos
       mecano
         debug: @options.debug
       # write original file to repos/ directory (not executed if file already exists)
-      .docker_build
+      .docker.build
         machine: @options.machine
         image: 'ryba/repos_sync'
         file: "#{__dirname}/../docker/Dockerfile"
@@ -76,11 +76,11 @@ class Repos
           custom_repo = utils.buid_custom_repo_file repo, data
           console.log "#{repopath}:/var/ryba"
           console.log "#{repos_dir}/#{repofile}:/etc/yum.repos.d/#{repofile}"
-          @write
+          @file
             destination: "#{repopath}/init"
             content: init_data
             mode: 0o0755
-          @write_ini
+          @file.ini
             destination: "#{repopath}/../#{repofile}"
             content: custom_repo
             stringify: misc.ini.stringify_multi_brackets
@@ -89,7 +89,7 @@ class Repos
             comment: '#'
             eof: true
           @then callback
-      .docker_run
+      .docker.run
         # debug: true
         image: 'ryba/repos_sync'
         machine: @options.machine
@@ -106,47 +106,47 @@ class Repos
   # start the ryba_repos container serving public directory
   start: (callback) ->
     mecano
-      .execute
-        cmd : wrap machine: @options.machine, "ps -a | grep '#{@options.container}'"
-        code_skipped: 1
-      .docker_service
-        unless: -> @status -1
-        image: 'httpd'
-        container: @options.container
-        machine: @options.machine
-        volume: "#{@options.directory}:/usr/local/apache2/htdocs/"
-        port: "#{@options.port}:80"
-      .docker_start
-        container: @options.container
-        machine: @options.machine
-      .then callback
+    .execute
+      cmd : wrap machine: @options.machine, "ps -a | grep '#{@options.container}'"
+      code_skipped: 1
+    .docker.service
+      unless: -> @status -1
+      image: 'httpd'
+      container: @options.container
+      machine: @options.machine
+      volume: "#{@options.directory}:/usr/local/apache2/htdocs/"
+      port: "#{@options.port}:80"
+    .docker.start
+      container: @options.container
+      machine: @options.machine
+    .then callback
   
   # stop the ryba_repos container serving public directory
   stop: (callback) ->
     container = @options.container ?= 'ryba_repos'
     mecano
-      .docker_stop
-        container: @options.container
-        machine: @options.machine
-        code_skipped: 1
-      .then callback
+    .docker.stop
+      container: @options.container
+      machine: @options.machine
+      code_skipped: 1
+    .then callback
       
   # removes the ryba_repos container serving public directory
   remove: (repos, callback) ->
-      repos ?= ['*']
+    repos ?= ['*']
+    mecano
+    .docker.rm
+      container: @options.container
+      machine: @options.machine
+      force: true
+      code_skipped: 1
+    each repos
+    .parallel true
+    .call (repo, next) =>
       mecano
-      .docker_rm
-        container: @options.container
-        machine: @options.machine
-        force: true
-        code_skipped: 1
-      each repos
-      .parallel true
-      .call (repo, next) =>
-        mecano
-        .remove
-          if: @options.purge
-          destination: "#{@options.directory}/#{repo}"
-        .then next
-      .then callback
+      .remove
+        if: @options.purge
+        destination: "#{@options.directory}/#{repo}"
+      .then next
+    .then callback
     
