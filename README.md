@@ -20,8 +20,6 @@ eval "$(docker-machine env ryba)"
 docker build -t ryba/repos .
 ```
 
-/usr/bin/rsync -av --bwlimit=524 --exclude=repodata --exclude=i386 --exclude=debug --exclude=isos --delete rsync://rsync.gtlib.gatech.edu/centos/6.7 /Users/wdavidw/www/projects/ryba/ryba-repos/public/repo_centos/centos/temp
-
 ## Sync
 
 `repos sync -r {name} -u {url}`
