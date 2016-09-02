@@ -1,0 +1,6 @@
+[HDP-SOLR-2.3-100]
+name=Hortonworks Data Platform Version - HDP-SOLR-2.3-100
+baseurl= http://public-repo-1.hortonworks.com/HDP-SOLR-2.3-100/repos/centos6
+gpgcheck=1
+enabled=1
+priority=1
