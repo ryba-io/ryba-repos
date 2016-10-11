@@ -38,18 +38,21 @@ synchronize the Epel repository.
 
 ```bash
 ./bin/repos -m ryba -d sync \
-  -r epel \
-  -u repos/epel.repo
+  -r centos6/centos \
+  -u repos/centos6/centos.repo
 ./bin/repos -m ryba -d sync \
-  -r centos-6.7 \
-  -u repos/centos-6.7.repo
+  -r centos6/epel \
+  -u repos/epel.repo
 ./bin/repos -d sync \
   -r ambari-2.4.0.1 \
   -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.4.0.1/ambari.repo
 ./bin/repos -d sync \
-  -r hdp-2.5.0.0 \
-  -u http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.0.0/hdp.repo
+  -r centos7-hdp-2.5.0.0 \
+  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/hdp.repo
 ```
+docker  run --rm -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/centos7-hdp-2.5.0.0:/var/ryba -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/../repos/centos7-hdp-2.5.0.0.repo:/etc/yum.repos.d/centos7-hdp-2.5.0.0.repo ryba/repos_sync
+
+docker  run --rm -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/centos7/hdp-2.5.0.0:/var/ryba -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/../repos/centos7/hdp-2.5.0.0.repo:/etc/yum.repos.d/centos7/hdp-2.5.0.0.repo ryba/repos_sync
 
 ## Start
 

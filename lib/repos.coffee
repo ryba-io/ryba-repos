@@ -46,8 +46,8 @@ class Repos
     .call (repo, next) =>
       ports = []
       repopath = "#{@options.directory}/#{repo.name}"
-      repos_dir = "#{@options.directory}/../repos"
-      repofile = "#{repo.name}.repo"
+      repofile_original = "#{@options.directory}/../repos/#{repo.name}.repo"
+      repofile_new = "#{@options.directory}/#{repo.name}.repo"
       mecano
         debug: @options.debug
       # write original file to repos/ directory (not executed if file already exists)
@@ -57,31 +57,26 @@ class Repos
         file: "#{__dirname}/../docker/Dockerfile"
       .mkdir
         destination: repopath
-      .mkdir
-        destination: repos_dir
       # download ( or copy ) orignial repo file to repos folder
       .download 
         source: "#{repo.url}"
-        destination: "#{repos_dir}/#{repofile}"
+        destination: "#{repofile_original}"
         if: /^http.*/.test repo.url
       .copy 
         source: "#{repo.url}"
-        destination: "#{repos_dir}/#{repofile}"
+        destination: "#{repofile_original}"
         unless: /^http.*/.test repo.url
-          # destination: "#{repopath}/#{repo.name}.repo"
       .call (_, callback) -> # Write init docker script
-        ini.parse "#{repos_dir}/#{repofile}", (err, data) =>
+        ini.parse "#{repofile_original}", (err, data) =>
           return callback err if err
           init_data = utils.build_assets repo, data
           custom_repo = utils.buid_custom_repo_file repo, data
-          console.log "#{repopath}:/var/ryba"
-          console.log "#{repos_dir}/#{repofile}:/etc/yum.repos.d/#{repofile}"
           @file
             destination: "#{repopath}/init"
             content: init_data
             mode: 0o0755
           @file.ini
-            destination: "#{repopath}/../#{repofile}"
+            destination: "#{repofile_new}"
             content: custom_repo
             stringify: misc.ini.stringify_multi_brackets
             indent: ''
@@ -95,7 +90,7 @@ class Repos
         machine: @options.machine
         volume: [
           "#{repopath}:/var/ryba"
-          "#{repos_dir}/#{repofile}:/etc/yum.repos.d/#{repofile}"
+          "#{repofile_original}:/etc/yum.repos.d/#{path.basename repo.name}.repo"
         ]
         env: @options.env
         rm: true
