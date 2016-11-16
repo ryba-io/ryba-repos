@@ -5,6 +5,7 @@ repos = require './repos'
 PrettyError = require('pretty-error')
 pe = new PrettyError()
 error = (err) ->
+  # console.log err.message if err
   console.log pe.render err if err
   return !!err
 
@@ -44,13 +45,20 @@ params = parameters
     name: 'sync'
     description: 'initialize local repo with Docker container'
     options: [
-      name: 'repo'
+      name: 'system'
+      type: 'array'
+      shortcut: 's'
+      required: true
+      one_of: ['centos6', 'centos7']
+      description: 'One of \'centos6\' or \'centos7\''
+    ,
+      name: 'repos'
       type: 'array'
       shortcut: 'r'
       required: true
       description: 'Repositories to initialize'
     ,
-      name: 'url'
+      name: 'urls'
       type: 'array'
       shortcut: 'u'
       required: false
@@ -71,15 +79,15 @@ params = parameters
     name: 'start'
     description: 'Start Repo server(s) with Docker'
     options: [
-      name: 'repo'
+      name: 'repos'
       type: 'array'
       shortcut: 'r'
       description: 'Repositories to start. All by default'
     ,
-      name: 'port'
+      name: 'ports'
       shortcut: 'p'
       type: 'array'
-      description: 'set port value on first start'
+      description: 'Set port value on first start'
     ]
   ,
     name: 'stop'
@@ -104,7 +112,9 @@ params = parameters
       description: 'Remove the repository files'
     ]
   ]
-args = params.parse()
+try
+  args = params.parse()
+catch e then return console.log e.message
 switch args.command
   when 'help' then console.log params.help args.name
   when 'list'
@@ -117,20 +127,16 @@ switch args.command
         process.stdout.write " Not registered" unless repo.docker.status
         process.stdout.write '\n'
   when 'sync'
-    {repo, url, port} = args
-    url ?= []
-    throw Error "Incoherent Arguments Length" if url.length and repo.length isnt url.length
-    repo = for name, i in repo
-      name: name, url: url[i]
-    repos(args).sync repo, error
+    args.urls ?= []
+    throw Error "Incoherent Arguments Length" if args.urls.length and args.repos.length isnt args.urls.length
+    args.repos = for repo, i in args.repos
+      repo: repo, url: args.urls[i]
+    repos(args).sync args.repos, error
   when 'start'
-    {repo, port} = args
-    repo ?= []
-    port ?= []
-    throw Error "Incoherent Arguments Length" if port.length and repo.length isnt port.length
-    repo = for name, i in repo
-      name: name, port: port[i]
-    repos(args).start repo, error
+    throw Error "Incoherent Arguments Length" if args.port.length and args.repo.length isnt args.port.length
+    args.repos = for repo, i in args.repos
+      repos: repo, port: args.port[i]
+    repos(args).start args.repos, error
   when 'stop'
     repos(args).stop args.repo, error
   when 'remove'

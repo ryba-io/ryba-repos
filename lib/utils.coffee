@@ -25,8 +25,8 @@ exports.build_assets = (repo, config) ->
 exports.buid_custom_repo_file = (repo, config) ->
   for _,conf of config
     infos = url.parse(conf.baseurl or conf.mirrorlist)
-    conf.mirrorlist = conf.mirrorlist.replace "#{infos.hostname}" , "#{infos.hostname}/#{repo.name}" if conf.mirrorlist
-    conf.baseurl = conf.baseurl.replace "#{infos.hostname}" , "#{infos.hostname}/#{repo.name}" if conf.baseurl
+    conf.mirrorlist = conf.mirrorlist.replace "#{infos.hostname}" , "localhost/#{repo.repo}" if conf.mirrorlist
+    conf.baseurl = conf.baseurl.replace "#{infos.hostname}" , "localhost/#{repo.repo}" if conf.baseurl
   config
     
 

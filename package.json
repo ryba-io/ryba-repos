@@ -23,12 +23,12 @@
   ],
   "dependencies": {
     "each": "latest",
-    "mecano": "0.5.0",
+    "mecano": "0.5.5",
     "multimatch": "latest",
     "node-ini": "latest",
-    "pad": "^1.0.0",
+    "pad": "^1.0.2",
     "parameters": "latest",
-    "pretty-error": "^2.0.0",
+    "pretty-error": "^2.0.2",
     "remove": "latest",
     "request": "latest",
     "watercolor": "0.0.2"

@@ -45,16 +45,16 @@ class Repos
     .parallel true
     .call (repo, next) =>
       ports = []
-      repopath = "#{@options.directory}/#{repo.name}"
-      repofile_original = "#{@options.directory}/../repos/#{repo.name}.repo"
-      repofile_new = "#{@options.directory}/#{repo.name}.repo"
+      repopath = "#{@options.directory}/#{@options.system}/#{repo.repo}"
+      repofile_original = "#{@options.directory}/../repos/#{@options.system}/#{repo.repo}.repo"
+      repofile_new = "#{@options.directory}/#{@options.system}/#{repo.repo}.repo"
       mecano
         debug: @options.debug
       # write original file to repos/ directory (not executed if file already exists)
       .docker.build
         machine: @options.machine
-        image: 'ryba/repos_sync'
-        file: "#{__dirname}/../docker/Dockerfile"
+        image: "ryba/repos_sync_#{@options.system}"
+        file: "#{__dirname}/../docker/Dockerfile.#{@options.system}"
       .mkdir
         destination: repopath
       # download ( or copy ) orignial repo file to repos folder
@@ -86,11 +86,11 @@ class Repos
           @then callback
       .docker.run
         # debug: true
-        image: 'ryba/repos_sync'
+        image: "ryba/repos_sync_#{@options.system}"
         machine: @options.machine
         volume: [
           "#{repopath}:/var/ryba"
-          "#{repofile_original}:/etc/yum.repos.d/#{path.basename repo.name}.repo"
+          "#{repofile_original}:/etc/yum.repos.d/#{path.basename repo.repo}.repo"
         ]
         env: @options.env
         rm: true

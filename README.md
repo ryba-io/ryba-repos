@@ -22,10 +22,12 @@ docker build -t ryba/repos .
 
 ## Sync
 
-`repos sync -r {name} -u {url}`
+`repos sync -s {system} -r {name} -u {url}`
 
 *   -r, --repo   
     Name of the repository.   
+*   -s, --system   
+    Underlying system, one of centos6 or centos7.   
 *   -u, --url   
     URL from where to fetch the repository definition file.   
 *   -m, --machine   
@@ -37,18 +39,44 @@ folder is named after the "repo" argument. For example, here's how to
 synchronize the Epel repository.
 
 ```bash
+# Centos6
 ./bin/repos -m ryba -d sync \
-  -r centos6/centos \
+  -s centos6 \
+  -r centos \
   -u repos/centos6/centos.repo
 ./bin/repos -m ryba -d sync \
-  -r centos6/epel \
-  -u repos/epel.repo
+  -s centos6 \
+  -r epel \
+  -u repos/centos6/epel.repo
 ./bin/repos -d sync \
-  -r ambari-2.4.0.1 \
-  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.4.0.1/ambari.repo
+  -s centos6 \
+  -r ambari-2.4.1.0 \
+  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.4.1.0/ambari.repo
 ./bin/repos -d sync \
-  -r centos7-hdp-2.5.0.0 \
+  -s centos6 \
+  -r hdf-2.0.1.0 \
+  -u http://public-repo-1.hortonworks.com/HDF/centos6/2.x/updates/2.0.1.0/hdf.repo
+# Centos7
+./bin/repos -m ryba -d sync \
+  -s centos7 \
+  -r centos \
+  -u repos/centos7/centos.repo
+./bin/repos -m ryba -d sync \
+  -s centos7 \
+  -r epel \
+  -u repos/centos7/epel.repo
+./bin/repos -d sync \
+  -s centos7 \
+  -r ambari-2.4.1.0 \
+  -u http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.4.1.0/ambari.repo
+./bin/repos -d sync \
+  -s centos7 \
+  -r hdp-2.5.0.0 \
   -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/hdp.repo
+./bin/repos -d sync \
+  -s centos7 \
+  -r hdf-2.0.1.0 \
+  -u http://public-repo-1.hortonworks.com/HDF/centos7/2.x/updates/2.0.1.0/hdf.repo
 ```
 docker  run --rm -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/centos7-hdp-2.5.0.0:/var/ryba -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/../repos/centos7-hdp-2.5.0.0.repo:/etc/yum.repos.d/centos7-hdp-2.5.0.0.repo ryba/repos_sync
 
