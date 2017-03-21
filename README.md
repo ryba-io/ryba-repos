@@ -71,8 +71,8 @@ synchronize the Epel repository.
   -u http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.4.1.0/ambari.repo
 ./bin/repos -d sync \
   -s centos7 \
-  -r hdp-2.5.0.0 \
-  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/hdp.repo
+  -r hdp-2.5.3.0 \
+  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.3.0/hdp.repo
 ./bin/repos -d sync \
   -s centos7 \
   -r hdf-2.0.1.0 \
