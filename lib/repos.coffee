@@ -1,8 +1,8 @@
 #!/usr/bin/env coffee
 
-mecano = require 'mecano'
-misc =  require 'mecano/lib/misc'
-wrap = require('mecano/lib/misc/docker').wrap
+nikita = require 'nikita'
+misc =  require 'nikita/lib/misc'
+wrap = require('nikita/lib/misc/docker').wrap
 fs = require 'fs'
 path = require 'path'
 rmr = require 'remove'
@@ -48,7 +48,7 @@ class Repos
       repopath = "#{@options.directory}/#{@options.system}/#{repo.repo}"
       repofile_original = "#{@options.directory}/../repos/#{@options.system}/#{repo.repo}.repo"
       repofile_new = "#{@options.directory}/#{@options.system}/#{repo.repo}.repo"
-      mecano
+      nikita
         debug: @options.debug
       # write original file to repos/ directory (not executed if file already exists)
       .docker.build
@@ -97,10 +97,9 @@ class Repos
       .then (err, status) ->
         return callback err if err
     .then callback
-
   # start the ryba_repos container serving public directory
   start: (callback) ->
-    mecano
+    nikita
     .execute
       cmd : wrap machine: @options.machine, "ps -a | grep '#{@options.container}'"
       code_skipped: 1
@@ -119,7 +118,7 @@ class Repos
   # stop the ryba_repos container serving public directory
   stop: (callback) ->
     container = @options.container ?= 'ryba_repos'
-    mecano
+    nikita
     .docker.stop
       container: @options.container
       machine: @options.machine
@@ -129,7 +128,7 @@ class Repos
   # removes the ryba_repos container serving public directory
   remove: (repos, callback) ->
     repos ?= ['*']
-    mecano
+    nikita
     .docker.rm
       container: @options.container
       machine: @options.machine
@@ -138,7 +137,7 @@ class Repos
     each repos
     .parallel true
     .call (repo, next) =>
-      mecano
+      nikita
       .remove
         if: @options.purge
         destination: "#{@options.directory}/#{repo}"
