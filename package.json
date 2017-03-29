@@ -22,19 +22,19 @@
     }
   ],
   "dependencies": {
-    "each": "latest",
-    "mecano": "0.5.5",
-    "multimatch": "latest",
-    "node-ini": "latest",
-    "pad": "^1.0.2",
-    "parameters": "latest",
-    "pretty-error": "^2.0.2",
-    "remove": "latest",
-    "request": "latest",
-    "watercolor": "0.0.2"
+    "each": "^0.6.1",
+    "nikita": "^0.6.1",
+    "multimatch": "^2.1.0",
+    "node-ini": "^1.0.0",
+    "pad": "^1.1.0",
+    "parameters": "^0.1.6",
+    "pretty-error": "^2.0.3",
+    "remove": "^0.1.5",
+    "request": "^2.81.0",
+    "watercolor": "^0.0.2"
   },
   "devDependencies": {
-    "coffee-script": "latest"
+    "coffee-script": "^1.12.4"
   },
   "homepage": "https://github.com/ryba-io/ryba-repos",
   "keywords": [
