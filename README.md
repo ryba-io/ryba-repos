@@ -39,48 +39,28 @@ folder is named after the "repo" argument. For example, here's how to
 synchronize the Epel repository.
 
 ```bash
-# Centos6
+os=centos7 # one of "centos6", "centos7"
 ./bin/repos -m ryba -d sync \
-  -s centos6 \
-  -r centos \
-  -u repos/centos6/centos.repo
-./bin/repos -m ryba -d sync \
-  -s centos6 \
-  -r epel \
-  -u repos/centos6/epel.repo
-./bin/repos -d sync \
-  -s centos6 \
-  -r ambari-2.4.1.0 \
-  -u http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.4.1.0/ambari.repo
-./bin/repos -d sync \
-  -s centos6 \
-  -r hdf-2.0.1.0 \
-  -u http://public-repo-1.hortonworks.com/HDF/centos6/2.x/updates/2.0.1.0/hdf.repo
-# Centos7
-./bin/repos -m ryba -d sync \
-  -s centos7 \
+  -s $os \
   -r centos \
   -u repos/centos7/centos.repo
 ./bin/repos -m ryba -d sync \
-  -s centos7 \
+  -s $os \
   -r epel \
   -u repos/centos7/epel.repo
 ./bin/repos -d sync \
-  -s centos7 \
-  -r ambari-2.4.1.0 \
-  -u http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.4.1.0/ambari.repo
+  -s $os \
+  -r ambari-2.4.2.0 \
+  -u http://public-repo-1.hortonworks.com/ambari/$os/2.x/updates/2.4.2.0/ambari.repo
 ./bin/repos -d sync \
-  -s centos7 \
+  -s $os \
   -r hdp-2.5.3.0 \
-  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.3.0/hdp.repo
+  -u http://public-repo-1.hortonworks.com/HDP/$os/2.x/updates/2.5.3.0/hdp.repo
 ./bin/repos -d sync \
-  -s centos7 \
-  -r hdf-2.0.1.0 \
-  -u http://public-repo-1.hortonworks.com/HDF/centos7/2.x/updates/2.0.1.0/hdf.repo
+  -s $os \
+  -r hdf-2.1.2.0 \
+  -u http://public-repo-1.hortonworks.com/HDF/$os/2.x/updates/2.1.2.0/hdf.repo
 ```
-docker  run --rm -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/centos7-hdp-2.5.0.0:/var/ryba -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/../repos/centos7-hdp-2.5.0.0.repo:/etc/yum.repos.d/centos7-hdp-2.5.0.0.repo ryba/repos_sync
-
-docker  run --rm -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/centos7/hdp-2.5.0.0:/var/ryba -v /Users/wdavidw/www/projects/ryba/ryba-repos/public/../repos/centos7/hdp-2.5.0.0.repo:/etc/yum.repos.d/centos7/hdp-2.5.0.0.repo ryba/repos_sync
 
 ## Start
 
