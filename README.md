@@ -43,11 +43,11 @@ os=centos7 # one of "centos6", "centos7"
 ./bin/repos -m ryba -d sync \
   -s $os \
   -r centos \
-  -u repos/centos7/centos.repo
+  -u repos/$os/centos.repo
 ./bin/repos -m ryba -d sync \
   -s $os \
   -r epel \
-  -u repos/centos7/epel.repo
+  -u repos/$os/epel.repo
 ./bin/repos -d sync \
   -s $os \
   -r ambari-2.4.2.0 \
@@ -71,12 +71,10 @@ os=centos7 # one of "centos6", "centos7"
 *   -p, --port   
     Port used to run the container the first time. 10800 by default.
 
-
 ```bash
 bin/repos start
 bin/repos -m 'ryba' start
 ```
-
 
 ## Recipes
 
