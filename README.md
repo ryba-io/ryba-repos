@@ -48,6 +48,10 @@ os=centos7 # one of "centos6", "centos7"
   -s $os \
   -r epel \
   -u repos/$os/epel.repo
+./bin/repos -m ryba -d sync \
+  -s $os \
+  -r mysql \
+  -u repos/$os/mysql.repo
 ./bin/repos -d sync \
   -s $os \
   -r ambari-2.4.2.0 \
