@@ -15,8 +15,6 @@ This chapter assumes that you have already installed Git, Docker and Node.js.
 ```bash
 git clone https://github.com/ryba-io/ryba-repos
 cd ryba-repos
-docker-machine create ryba
-eval "$(docker-machine env ryba)"
 docker build -t ryba/repos .
 ```
 
