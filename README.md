@@ -62,6 +62,10 @@ os=centos7 # one of "centos6", "centos7"
   -s $os \
   -r hdf-2.1.2.0 \
   -u http://public-repo-1.hortonworks.com/HDF/$os/2.x/updates/2.1.2.0/hdf.repo
+./bin/repos -d sync \
+  -s $os \
+  -r opennebula \
+  -u repos/$os/opennebula.repo
 ```
 
 ## Start
