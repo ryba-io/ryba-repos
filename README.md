@@ -52,12 +52,12 @@ os=centos7 # one of "centos6", "centos7"
   -u repos/$os/mysql.repo
 ./bin/repos -d sync \
   -s $os \
-  -r ambari-2.4.2.0 \
-  -u http://public-repo-1.hortonworks.com/ambari/$os/2.x/updates/2.4.2.0/ambari.repo
+  -r ambari-2.5.1.0 \
+  -u http://public-repo-1.hortonworks.com/ambari/$os/2.x/updates/2.5.1.0/ambari.repo
 ./bin/repos -d sync \
   -s $os \
-  -r hdp-2.5.3.0 \
-  -u http://public-repo-1.hortonworks.com/HDP/$os/2.x/updates/2.5.3.0/hdp.repo
+  -r 2.6.1.0 \
+  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.1.0/hdp.repo
 ./bin/repos -d sync \
   -s $os \
   -r hdf-2.1.2.0 \
