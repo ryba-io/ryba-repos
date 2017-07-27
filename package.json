@@ -45,5 +45,8 @@
     "rpm",
     "yum"
   ],
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "postversion": "git push && git push --tagse && npm publish"
+  }
 }
