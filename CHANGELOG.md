@@ -3,6 +3,8 @@
 
 ## Trunk
 
+## Version 0.1.0
+
 * package: latest dependecies
 * package: hook to publish on github and npm of npm version
 * repos: latest ambari, hdp and mysql
