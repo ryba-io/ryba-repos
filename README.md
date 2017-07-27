@@ -85,3 +85,9 @@ bin/repos -m 'ryba' start
 ## Recipes
 
 ./bin/repos -d sync -r repo_mongodb-org-3.0 -u /Users/wdavidw/www/projects/ryba/ryba-repos/repos/mongodb-org-3.0.repo
+
+## Developer
+
+There are currently no plan to write unit tests for this package.
+
+For contributor, run `npm version major|minor|patch -m "Bump to version %s` to publish a new version. Changelog is generated with the command `changelog-maker --group`.

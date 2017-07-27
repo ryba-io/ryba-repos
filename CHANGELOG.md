@@ -5,69 +5,114 @@
 
 ## Version 0.1.0
 
-* package: latest dependecies
-* package: hook to publish on github and npm of npm version
-* repos: latest ambari, hdp and mysql
-* repos: add opennebula
-* package: update install instructions
-* epel: fix epel.repo
-* repos: add mysql community
-* centos7: fix centos and epel definition files
-* repos: rename mecano to nikita
-* readme: update hdp url
-* adding 2.5.3.0-37 hdp repo
-* sync: introduce system option
-* sync: re-organize by rhel version
+* [[`e3a4c918ab`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/e3a4c918ab)] - Bump to version 0.1.0 (David Worms) 
+* [[`02a70d4f35`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/02a70d4f35)] - Merge remote branch 'origin/master' (David Worms) 
+* [[`2b50e1acf6`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/2b50e1acf6)] - adding 2.5.3.0-37 hdp repo (Lucas Bakalian) 
+* [[`00c9845f21`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/00c9845f21)] - bump version to 0.0.3 (David Worms) 
+* [[`d00740a029`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d00740a029)] - **centos7**: fix centos and epel definition files (David Worms) 
+* [[`7e1efa43cf`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/7e1efa43cf)] - **changelog**: set version (David Worms) 
+* [[`bdbc6f1775`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/bdbc6f1775)] - **epel**: fix epel.repo (Paul-Adrien Cordonnier) 
+* [[`57fe27bbec`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/57fe27bbec)] - **package**: fix postversion command (David Worms) 
+* [[`783f6733cf`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/783f6733cf)] - **package**: latest dependecies (David Worms) 
+* [[`c5bd2b3b32`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/c5bd2b3b32)] - **package**: hook to publish on github and npm of npm version (David Worms) 
+* [[`5a466c3f4e`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/5a466c3f4e)] - **package**: update install instructions (Paul-Adrien Cordonnier) 
+* [[`da33b02acc`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/da33b02acc)] - **package**: latest dependencies (David Worms) 
+* [[`9a9cc0b795`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/9a9cc0b795)] - **readme**: update hdp url (David Worms) 
+* [[`70be0c2692`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/70be0c2692)] - **repos**: latest ambari, hdp and mysql (David Worms) 
+* [[`4aa340735e`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/4aa340735e)] - **repos**: add opennebula (Paul-Adrien Cordonnier) 
+* [[`8ed18438b1`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8ed18438b1)] - **repos**: add mysql community (David Worms) 
+* [[`e4e6c6b4bc`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/e4e6c6b4bc)] - **repos**: latest (David Worms) 
+* [[`7b455681e7`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/7b455681e7)] - **repos**: rename mecano to nikita (David Worms) 
+* [[`6d61d39f5d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/6d61d39f5d)] - **sync**: introduce system option (David Worms) 
+* [[`e766434954`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/e766434954)] - **sync**: re-organize by rhel version (David Worms) 
 
 ## Verion 0.0.3
 
-* package: fixpack
-* repos: latest repos
-* repos: update mecano usage
-* readme: remove rsync command
-* readme: latest ambari and hdp exemple
-* repos: hdp 2.3.4 and 2.4.0
-* package: pad dependency
-* readme: centos and peel examples
-* repos: handle file path
-* add repos
-* remove lib/repos
-* utils: handle mirrorlist
-* use pretty-error
-* mounting repo file directly inside /etc/yum.repos.d/
-* use mecano docker api, serves all repos in one container
-* readme: mongodb recipe
-* repos: refactor, accept local path, remove port
-* docker: use ryba image
-* readme: osx instructions
-* docker: isolate docker file
-* docker: rename build image
-* sync: rename docker image to ryba/repos
-* src: runtime coffee
-* repos: add epel
-* repos: add centos-base
-* fix port, improve log
-* fix repo creation
+* [[`00c9845f21`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/00c9845f21)] - bump version to 0.0.3 (David Worms) 
+* [[`fdb130a4cf`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/fdb130a4cf)] - add repos (David Worms) 
+* [[`431fb48a29`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/431fb48a29)] - remove lib/repos (David Worms) 
+* [[`e874dc7c2c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/e874dc7c2c)] - use pretty-error (David Worms) 
+* [[`8669545ece`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8669545ece)] - latest commands (David Worms) 
+* [[`f0d97f324d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/f0d97f324d)] - mounting repo file directly inside /etc/yum.repos.d/ (Lucas Bakalian) 
+* [[`be09dfc9b7`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/be09dfc9b7)] - use mecano docker api, serves all repos in one container (Lucas Bakalian) 
+* [[`973430569c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/973430569c)] - fix port, improve log (David Worms) 
+* [[`cc0d37fd15`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/cc0d37fd15)] - fix repo creation (David Worms) 
+* [[`21b3a1a294`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/21b3a1a294)] - bump to version 0.0.2 (David Worms) 
+* [[`8352598db0`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8352598db0)] - **docker**: use ryba image (David Worms) 
+* [[`4368bd701d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/4368bd701d)] - **docker**: isolate docker file (David Worms) 
+* [[`30f1b6413c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/30f1b6413c)] - **docker**: rename build image (David Worms) 
+* [[`36e5a0cd03`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/36e5a0cd03)] - **package**: fixpack (David Worms) 
+* [[`01161ae7fc`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/01161ae7fc)] - **package**: pad dependency (David Worms) 
+* [[`9362e5b47e`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/9362e5b47e)] - **readme**: remove rsync command (David Worms) 
+* [[`8ecd4612fb`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8ecd4612fb)] - **readme**: latest ambari and hdp exemple (David Worms) 
+* [[`6fbb668dd2`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/6fbb668dd2)] - **readme**: centos and peel examples (David Worms) 
+* [[`d8c338dd87`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d8c338dd87)] - **readme**: mongodb recipe (David Worms) 
+* [[`39a32f1cfa`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/39a32f1cfa)] - **readme**: osx instructions (David Worms) 
+* [[`134a241477`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/134a241477)] - **repos**: latest repos (David Worms) 
+* [[`7db269fd66`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/7db269fd66)] - **repos**: update mecano usage (David Worms) 
+* [[`86f4035d33`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/86f4035d33)] - **repos**: hdp 2.3.4 and 2.4.0 (David Worms) 
+* [[`af2c15b589`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/af2c15b589)] - **repos**: handle file path (David Worms) 
+* [[`c7c9be4162`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/c7c9be4162)] - **repos**: refactor, accept local path, remove port (David Worms) 
+* [[`d0c28ddf1a`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d0c28ddf1a)] - **repos**: add epel (David Worms) 
+* [[`d14625d650`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d14625d650)] - **repos**: add centos-base (David Worms) 
+* [[`28d6991584`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/28d6991584)] - **src**: runtime coffee (David Worms) 
+* [[`a9ae0fb9d4`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/a9ae0fb9d4)] - **sync**: rename docker image to ryba/repos (David Worms) 
+* [[`61d3468628`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/61d3468628)] - **utils**: handle mirrorlist (David Worms) 
 
 ## Version 0.0.2
 
-* config: isolate repos inside key
-* custom directory parameter
+* [[`00c9845f21`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/00c9845f21)] - bump version to 0.0.3 (David Worms) 
+* [[`fdb130a4cf`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/fdb130a4cf)] - add repos (David Worms) 
+* [[`431fb48a29`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/431fb48a29)] - remove lib/repos (David Worms) 
+* [[`e874dc7c2c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/e874dc7c2c)] - use pretty-error (David Worms) 
+* [[`8669545ece`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8669545ece)] - latest commands (David Worms) 
+* [[`f0d97f324d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/f0d97f324d)] - mounting repo file directly inside /etc/yum.repos.d/ (Lucas Bakalian) 
+* [[`be09dfc9b7`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/be09dfc9b7)] - use mecano docker api, serves all repos in one container (Lucas Bakalian) 
+* [[`973430569c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/973430569c)] - fix port, improve log (David Worms) 
+* [[`cc0d37fd15`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/cc0d37fd15)] - fix repo creation (David Worms) 
+* [[`21b3a1a294`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/21b3a1a294)] - bump to version 0.0.2 (David Worms) 
+* [[`8352598db0`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8352598db0)] - **docker**: use ryba image (David Worms) 
+* [[`4368bd701d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/4368bd701d)] - **docker**: isolate docker file (David Worms) 
+* [[`30f1b6413c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/30f1b6413c)] - **docker**: rename build image (David Worms) 
+* [[`36e5a0cd03`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/36e5a0cd03)] - **package**: fixpack (David Worms) 
+* [[`01161ae7fc`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/01161ae7fc)] - **package**: pad dependency (David Worms) 
+* [[`9362e5b47e`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/9362e5b47e)] - **readme**: remove rsync command (David Worms) 
+* [[`8ecd4612fb`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8ecd4612fb)] - **readme**: latest ambari and hdp exemple (David Worms) 
+* [[`6fbb668dd2`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/6fbb668dd2)] - **readme**: centos and peel examples (David Worms) 
+* [[`d8c338dd87`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d8c338dd87)] - **readme**: mongodb recipe (David Worms) 
+* [[`39a32f1cfa`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/39a32f1cfa)] - **readme**: osx instructions (David Worms) 
+* [[`134a241477`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/134a241477)] - **repos**: latest repos (David Worms) 
+* [[`7db269fd66`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/7db269fd66)] - **repos**: update mecano usage (David Worms) 
+* [[`86f4035d33`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/86f4035d33)] - **repos**: hdp 2.3.4 and 2.4.0 (David Worms) 
+* [[`af2c15b589`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/af2c15b589)] - **repos**: handle file path (David Worms) 
+* [[`c7c9be4162`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/c7c9be4162)] - **repos**: refactor, accept local path, remove port (David Worms) 
+* [[`d0c28ddf1a`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d0c28ddf1a)] - **repos**: add epel (David Worms) 
+* [[`d14625d650`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d14625d650)] - **repos**: add centos-base (David Worms) 
+* [[`28d6991584`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/28d6991584)] - **src**: runtime coffee (David Worms) 
+* [[`a9ae0fb9d4`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/a9ae0fb9d4)] - **sync**: rename docker image to ryba/repos (David Worms) 
+* [[`61d3468628`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/61d3468628)] - **utils**: handle mirrorlist (David Worms) 
 
 ## Version 0.0.1
 
-* distribute code into cli and utils
-* sync: refactor
-* improve exemples
-* boot2docker
-* clean list function
-* clean code
-* bug fixes, async IO
-* cleanup sync function
-* bin: fix repos script
-* default port as 10180
-* move port inc to public
-* add doc
-* clean fs tree
-* set default value for port_inc.conf
-* use official httpd docker image
+* [[`e505cbca0e`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/e505cbca0e)] - bump to version 0.0.1 (David Worms) 
+* [[`276c1fec1d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/276c1fec1d)] - distribute code into cli and utils (David Worms) 
+* [[`1d55febff5`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/1d55febff5)] - improve exemples (David Worms) 
+* [[`73ba3e42b6`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/73ba3e42b6)] - boot2docker (David Worms) 
+* [[`8f4aa43df2`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8f4aa43df2)] - clean list function (Pierre Sauvage) 
+* [[`1977fe8aba`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/1977fe8aba)] - clean code (Pierre Sauvage) 
+* [[`834e4aed71`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/834e4aed71)] - bug fixes, async IO (Pierre Sauvage) 
+* [[`d1dc20a141`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d1dc20a141)] - cleanup sync function (Lucas Bakalian) 
+* [[`8ff2473a3f`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8ff2473a3f)] - Merge branch 'master' (David Worms) 
+* [[`cb2b0fae8d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/cb2b0fae8d)] - document repos init (David Worms) 
+* [[`fa324db5b7`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/fa324db5b7)] - default port as 10180 (David Worms) 
+* [[`ea813aa7ff`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/ea813aa7ff)] - move port inc to public (David Worms) 
+* [[`6db2eeaeaa`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/6db2eeaeaa)] - add doc (Pierre Sauvage) 
+* [[`b1c2f938d2`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/b1c2f938d2)] - clean fs tree (Pierre Sauvage) 
+* [[`a17fa27548`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/a17fa27548)] - set default value for port_inc.conf (Pierre Sauvage) 
+* [[`8adb957104`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8adb957104)] - use official httpd docker image (Pierre Sauvage) 
+* [[`b01a55650b`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/b01a55650b)] - big commit (Pierre Sauvage) 
+* [[`b2aca60c81`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/b2aca60c81)] - move stuffs around (David Worms) 
+* [[`6ca287fe8d`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/6ca287fe8d)] - Initial commit (David Worms) 
+* [[`815b735857`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/815b735857)] - **bin**: fix repos script (Pierre Sauvage) 
+* [[`4d40ccc9e7`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/4d40ccc9e7)] - **init**: port can now be forced (Pierre Sauvage) 
+* [[`30f679fa91`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/30f679fa91)] - **sync**: refactor (David Worms) 
