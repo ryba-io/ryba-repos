@@ -47,6 +47,6 @@
   ],
   "license": "BSD-3-Clause",
   "scripts": {
-    "postversion": "git push && git push --tagse && npm publish"
+    "postversion": "git push && git push --tag && npm publish"
   }
 }
