@@ -66,6 +66,10 @@ os=centos7 # one of "centos6", "centos7"
   -s $os \
   -r opennebula \
   -u repos/$os/opennebula.repo
+./bin/repos -d sync \
+  -s $os \
+  -r kubernetes \
+  -u repos/$os/kubernetes.repo
 ```
 
 ## Start
