@@ -34,6 +34,7 @@
     "watercolor": "^0.0.2"
   },
   "devDependencies": {
+    "changelog-maker": "^2.2.6",
     "coffee-script": "^1.12.7"
   },
   "homepage": "https://github.com/ryba-io/ryba-repos",
