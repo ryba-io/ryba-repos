@@ -1,7 +1,16 @@
 
 # Changelog
 
-## Trunk
+## Version 0.1.1
+
+* [[`0cb7fbe864`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/0cb7fbe864)] - fix permission on repo files (Lucas Bakalian) 
+* [[`d354a35e16`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/d354a35e16)] - add repos for centos7 (Lucas Bakalian) 
+* [[`8973fc8b6c`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/8973fc8b6c)] - **package**: add changelog-make (David Worms) 
+* [[`7c6d5e528e`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/7c6d5e528e)] - **package**: update with latest parameters and each (David Worms) 
+* [[`23a2982dea`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/23a2982dea)] - **package**: ignore yarn lock (David Worms) 
+* [[`4938326c36`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/4938326c36)] - **package**: generate changelog with changelog-maker (David Worms) 
+* [[`ad6c89eaf8`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/ad6c89eaf8)] - **repo**: add kuberntes (David Worms) 
+* [[`947d2c50d0`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/947d2c50d0)] - **repo**: fix centos7/centos (David Worms)
 
 ## Version 0.1.0
 
