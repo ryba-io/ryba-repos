@@ -96,7 +96,7 @@ class Repos
         rm: true
       .then (err, status) ->
         return callback err if err
-    .then callback
+    .next callback
   # start the ryba_repos container serving public directory
   start: (callback) ->
     nikita

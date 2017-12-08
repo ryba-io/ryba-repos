@@ -22,15 +22,15 @@
     }
   ],
   "dependencies": {
-    "each": "^0.6.1",
+    "each": "^1.0.0",
     "multimatch": "^2.1.0",
-    "nikita": "^0.6.2",
+    "nikita": "^0.6.3",
     "node-ini": "^1.0.0",
-    "pad": "^1.1.0",
-    "parameters": "^0.1.6",
+    "pad": "^2.0.3",
+    "parameters": "^0.4.2",
     "pretty-error": "^2.1.1",
     "remove": "^0.1.5",
-    "request": "^2.81.0",
+    "request": "^2.83.0",
     "watercolor": "^0.0.2"
   },
   "devDependencies": {
