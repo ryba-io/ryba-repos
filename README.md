@@ -92,6 +92,4 @@ bin/repos -m 'ryba' start
 
 ## Developer
 
-There are currently no plan to write unit tests for this package.
-
 For contributor, run `npm version major|minor|patch -m "Bump to version %s` to publish a new version. Changelog is generated with the command `./node_modules/.bin/changelog-maker --group`.
