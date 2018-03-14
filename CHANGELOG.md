@@ -3,8 +3,15 @@
 
 ## Trunk
 
-* [[`213fc1d31f`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/213fc1d31f)] - **list**: display only the name (David Worms) 
-* [[`bfbb81f149`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/bfbb81f149)] - **nikita**: reflect latest version (David Worms)
+* [[`bee153530b`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/bee153530b)] - **list**: add test (David Worms) 
+* [[`f30df719c5`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/f30df719c5)] - **list**: display only the name (David Worms) 
+* [[`59efaa9507`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/59efaa9507)] - **nikita**: rename destination to target (David Worms) 
+* [[`bfbb81f149`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/bfbb81f149)] - **nikita**: reflect latest version (David Worms) 
+* [[`9a1e0fec0f`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/9a1e0fec0f)] - **options**: rename directory to store (David Worms) 
+* [[`3d1ae2a4d6`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/3d1ae2a4d6)] - **package**: latest dependencies (David Worms) 
+* [[`0838bc56c9`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/0838bc56c9)] - **package**: remove coffee compilation (David Worms) 
+* [[`2b2b461637`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/2b2b461637)] - **package**: release commands (David Worms) 
+* [[`2ea09e30fc`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/2ea09e30fc)] - **readme**: remove warning about tests (David Worms)
 
 ## Version 0.1.1
 
