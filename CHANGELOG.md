@@ -1,6 +1,11 @@
 
 # Changelog
 
+## Trunk
+
+* [[`213fc1d31f`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/213fc1d31f)] - **list**: display only the name (David Worms) 
+* [[`bfbb81f149`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/bfbb81f149)] - **nikita**: reflect latest version (David Worms)
+
 ## Version 0.1.1
 
 * [[`0cb7fbe864`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/0cb7fbe864)] - fix permission on repo files (Lucas Bakalian) 
