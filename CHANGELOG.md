@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Trunk
+## Version 0.2.0
 
 * [[`bee153530b`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/bee153530b)] - **list**: add test (David Worms) 
 * [[`f30df719c5`](https://github.com/David Worms <david@adaltas.com>/ryba-repos/commit/f30df719c5)] - **list**: display only the name (David Worms) 
