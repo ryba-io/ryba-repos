@@ -3,9 +3,10 @@ module.exports =
   name: 'repos'
   description: 'Install and sync RHEL/CentOS repositories'
   options: [
-    name: 'output'
-    shortcut: 'o'
-    description: 'Directory storing the repository files.'
+    name: 'container'
+    shortcut: 'c'
+    type: 'string'
+    description: 'override the container name. `ryba_repos` by default'
   ,
     name: 'debug'
     shortcut: 'd'
@@ -15,12 +16,16 @@ module.exports =
     name: 'machine'
     shortcut: 'm'
     type: 'string'
-    description: 'name of the docker machine to use (optional)' 
+    description: 'name of the docker machine to use (optional)'
   ,
-    name: 'container'
-    shortcut: 'c'
+    name: 'output'
+    shortcut: 'o'
+    description: 'Directory storing the repository files.'
+  ,
+    name: 'store'
+    shortcut: 's'
     type: 'string'
-    description: 'override the container name. `ryba_repos` by default' 
+    description: 'Directory storing the repositories'
   ]
   commands: [
     name: 'list'

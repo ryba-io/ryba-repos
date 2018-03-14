@@ -21,12 +21,12 @@ class Repos
   constructor: (@options={}) ->
     @options.container ?= 'ryba_repos'
     @options.port ?= '10800'
-    @options.directory ?= './public'
-    @options.directory = path.resolve process.cwd(), @options.directory
+    @options.store ?= './public'
+    @options.store = path.resolve process.cwd(), @options.store
     @options.log ?= true
   
   list: (repos, callback) ->
-    dir = path.resolve @options.directory, @options.system
+    dir = path.resolve @options.store, @options.system
     fs.readdir dir, (err, dirs) =>
       return callback err if err
       return callback null, 'no repos' unless dirs.length
@@ -46,9 +46,9 @@ class Repos
     .parallel true
     .call (repo, next) =>
       ports = []
-      repopath = "#{@options.directory}/#{@options.system}/#{repo.repo}"
-      repofile_original = "#{@options.directory}/../repos/#{@options.system}/#{repo.repo}.repo"
-      repofile_new = "#{@options.directory}/#{@options.system}/#{repo.repo}.repo"
+      repopath = "#{@options.store}/#{@options.system}/#{repo.repo}"
+      repofile_original = "#{@options.store}/../repos/#{@options.system}/#{repo.repo}.repo"
+      repofile_new = "#{@options.store}/#{@options.system}/#{repo.repo}.repo"
       nikita
         debug: @options.debug
       # write original file to repos/ directory (not executed if file already exists)
@@ -109,7 +109,7 @@ class Repos
       image: 'httpd'
       container: @options.container
       machine: @options.machine
-      volume: "#{@options.directory}:/usr/local/apache2/htdocs/"
+      volume: "#{@options.store}:/usr/local/apache2/htdocs/"
       port: "#{@options.port}:80"
     .docker.start
       container: @options.container
