@@ -57,15 +57,15 @@ class Repos
         image: "ryba/repos_sync_#{@options.system}"
         file: "#{__dirname}/../docker/Dockerfile.#{@options.system}"
       .mkdir
-        destination: repopath
+        target: repopath
       # download ( or copy ) orignial repo file to repos folder
       .download 
         source: "#{repo.url}"
-        destination: "#{repofile_original}"
+        target: "#{repofile_original}"
         if: /^http.*/.test repo.url
       .copy 
         source: "#{repo.url}"
-        destination: "#{repofile_original}"
+        target: "#{repofile_original}"
         unless: /^http.*/.test repo.url
       .call (_, callback) -> # Write init docker script
         ini.parse "#{repofile_original}", (err, data) =>
@@ -73,11 +73,11 @@ class Repos
           init_data = utils.build_assets repo, data
           custom_repo = utils.buid_custom_repo_file repo, data
           @file
-            destination: "#{repopath}/init"
+            target: "#{repopath}/init"
             content: init_data
             mode: 0o0755
           @file.ini
-            destination: "#{repofile_new}"
+            target: "#{repofile_new}"
             content: custom_repo
             stringify: misc.ini.stringify_multi_brackets
             indent: ''
@@ -141,7 +141,7 @@ class Repos
       nikita
       .remove
         if: @options.purge
-        destination: "#{@options.directory}/#{repo}"
+        target: "#{@options.store}/#{repo}"
       .next next
     .next callback
     
