@@ -83,7 +83,7 @@ class Repos
             separator: '='
             comment: '#'
             eof: true
-          @then callback
+          @next callback
       .docker.run
         # debug: true
         image: "ryba/repos_sync_#{@options.system}"
@@ -94,7 +94,7 @@ class Repos
         ]
         env: @options.env
         rm: true
-      .then (err, status) ->
+      .next (err, status) ->
         return callback err if err
     .next callback
   # start the ryba_repos container serving public directory
@@ -113,7 +113,7 @@ class Repos
     .docker.start
       container: @options.container
       machine: @options.machine
-    .then callback
+    .next callback
   
   # stop the ryba_repos container serving public directory
   stop: (callback) ->
@@ -123,7 +123,7 @@ class Repos
       container: @options.container
       machine: @options.machine
       code_skipped: 1
-    .then callback
+    .next callback
       
   # removes the ryba_repos container serving public directory
   remove: (repos, callback) ->
@@ -141,6 +141,6 @@ class Repos
       .remove
         if: @options.purge
         destination: "#{@options.directory}/#{repo}"
-      .then next
-    .then callback
+      .next next
+    .next callback
     
