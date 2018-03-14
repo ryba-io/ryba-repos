@@ -30,6 +30,13 @@ module.exports =
       type: 'array'
       shortcut: 'r'
       description: 'repo name filter(s)'
+    ,
+      name: 'system'
+      type: 'string'
+      shortcut: 's'
+      required: true
+      one_of: ['centos6', 'centos7']
+      description: 'One of \'centos6\' or \'centos7\''
     ]
   ,
     name: 'sync'

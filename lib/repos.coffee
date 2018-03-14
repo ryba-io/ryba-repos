@@ -25,14 +25,15 @@ class Repos
     @options.directory = path.resolve process.cwd(), @options.directory
     @options.log ?= true
   
-  list: (callback) ->
-    fs.readdir @options.directory, (err, dirs) =>
+  list: (repos, callback) ->
+    dir = path.resolve @options.directory, @options.system
+    fs.readdir dir, (err, dirs) =>
       return callback err if err
       return callback null, 'no repos' unless dirs.length
       list = []
-      (list.push(name) unless /^.*\.repo$/.test name) for name in dirs      
+      (list.push(name) unless /^.*\.repo$/.test name) for name in dirs     
       callback null , list
-    
+  
   # create the directories'layout (public, repo)
   # syncs the repos:
   # - create a directory inside public under the repo(s) name(s)

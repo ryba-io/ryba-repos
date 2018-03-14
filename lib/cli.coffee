@@ -19,10 +19,7 @@ switch args.command
     repos(args).list args.repo, (err, repos) ->
       return if error err
       for repo in repos
-        process.stdout.write repo.name
-        process.stdout.write " [#{repo.port}]"
-        process.stdout.write " #{repo.docker.status}" if repo.docker.status
-        process.stdout.write " Not registered" unless repo.docker.status
+        process.stdout.write repo
         process.stdout.write '\n'
   when 'sync'
     args.urls ?= []
