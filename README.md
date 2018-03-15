@@ -56,8 +56,8 @@ os=centos7 # one of "centos6", "centos7"
   -u http://public-repo-1.hortonworks.com/ambari/$os/2.x/updates/2.5.1.0/ambari.repo
 ./bin/repos -d sync \
   -s $os \
-  -r 2.6.1.0 \
-  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.1.0/hdp.repo
+  -r hdp-2.6.4.0 \
+  -u http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.4.0/hdp.repo
 ./bin/repos -d sync \
   -s $os \
   -r hdf-2.1.2.0 \
