@@ -18,7 +18,7 @@ module.exports = (options) ->
 
 class Repos
 
-  constructor: (@options={}) ->
+  constructor: () ->
   
   list: (repos, callback) ->
     dir = path.resolve @options.store, @options.system
@@ -36,11 +36,9 @@ class Repos
   # - copy to repos folder the original .repo file
   sync: (repos, callback) ->
     return callback Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
-    return callback Error "repos number (#{repos.length}) and ports number (#{ports?.length}) don't match" if ports? and repos.length isnt ports.length
     each repos
     .parallel true
     .call (repo, next) =>
-      ports = []
       repopath = "#{@options.store}/#{@options.system}/#{repo.repo}"
       repofile_original = "#{@options.store}/../repos/#{@options.system}/#{repo.repo}.repo"
       repofile_new = "#{@options.store}/#{@options.system}/#{repo.repo}.repo"
@@ -94,33 +92,36 @@ class Repos
         return callback err if err
     .next callback
   # start the ryba_repos container serving public directory
-  start: (callback) ->
+  start: (options, callback) ->
+    options.store = path.resolve process.cwd(), options.store
     nikita
-    .execute
-      cmd : wrap machine: @options.machine, "ps -a | grep '#{@options.container}'"
+      debug: options.debug
+    .system.execute
+      cmd : wrap machine: options.machine, "ps -a | grep '#{options.container}'"
       code_skipped: 1
+      shy: true
     .docker.service
       unless: -> @status -1
       image: 'httpd'
-      container: @options.container
-      machine: @options.machine
-      volume: "#{@options.store}:/usr/local/apache2/htdocs/"
-      port: "#{@options.port}:80"
+      container: options.container
+      machine: options.machine
+      volume: "#{options.store}:/usr/local/apache2/htdocs/"
+      port: "#{options.port}:80"
     .docker.start
-      container: @options.container
-      machine: @options.machine
+      container: options.container
+      machine: options.machine
     .next callback
   
   # stop the ryba_repos container serving public directory
-  stop: (callback) ->
-    container = @options.container ?= 'ryba_repos'
+  stop: (options, callback) ->
     nikita
+      debug: options.debug
     .docker.stop
-      container: @options.container
-      machine: @options.machine
+      container: options.container
+      machine: options.machine
       code_skipped: 1
     .next callback
-      
+
   # removes the ryba_repos container serving public directory
   remove: (repos, callback) ->
     repos ?= ['*']

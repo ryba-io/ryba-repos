@@ -28,12 +28,23 @@ switch args.command
       repo: repo, url: args.urls[i]
     repos(args).sync args.repos, error
   when 'start'
-    throw Error "Incoherent Arguments Length" if args.port.length and args.repo.length isnt args.port.length
-    args.repos = for repo, i in args.repos
-      repos: repo, port: args.port[i]
-    repos(args).start args.repos, error
+    repos().start args, (err, status) ->
+      if err
+        process.stdout.write err.message
+      else if status
+        process.stdout.write "Server started and listening on port #{args.port}"
+      else
+        process.stdout.write 'Server already started'
+      process.stdout.write '\n'
   when 'stop'
-    repos(args).stop args.repo, error
+    repos().stop args, (err, status) ->
+      if err
+        process.stdout.write err.message
+      else if status
+        process.stdout.write 'Server stopped'
+      else
+        process.stdout.write 'Server already stopped'
+      process.stdout.write '\n'
   when 'remove'
     repos(args).remove args.repo, error
   else
