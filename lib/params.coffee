@@ -6,6 +6,7 @@ module.exports =
     name: 'container'
     shortcut: 'c'
     type: 'string'
+    default: 'ryba_repos'
     description: 'override the container name. `ryba_repos` by default'
   ,
     name: 'debug'
@@ -25,6 +26,7 @@ module.exports =
     name: 'store'
     shortcut: 's'
     type: 'string'
+    default: './public'
     description: 'Directory storing the repositories'
   ]
   commands: [
@@ -65,11 +67,6 @@ module.exports =
       shortcut: 'u'
       required: false
       description: 'URLs of the repositories'
-    ,
-      name: 'port'
-      shortcut: 'p'
-      type: 'array'
-      description: 'Default port value'
     , 
       name: 'env'
       shortcut: 'e'
@@ -86,9 +83,10 @@ module.exports =
       shortcut: 'r'
       description: 'Repositories to start. All by default'
     ,
-      name: 'ports'
+      name: 'port'
       shortcut: 'p'
-      type: 'array'
+      type: 'integer'
+      default: 10080
       description: 'Set port value on first start'
     ]
   ,

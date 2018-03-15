@@ -19,11 +19,6 @@ module.exports = (options) ->
 class Repos
 
   constructor: (@options={}) ->
-    @options.container ?= 'ryba_repos'
-    @options.port ?= '10800'
-    @options.store ?= './public'
-    @options.store = path.resolve process.cwd(), @options.store
-    @options.log ?= true
   
   list: (repos, callback) ->
     dir = path.resolve @options.store, @options.system
