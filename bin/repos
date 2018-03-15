@@ -1,4 +1,3 @@
 #!/bin/bash
-cd $(dirname "${BASH_SOURCE}")/..
 
-./node_modules/.bin/coffee lib/cli.coffee $@
+$(dirname "${BASH_SOURCE}")/../node_modules/.bin/coffee -r coffee-errors lib/cli.coffee $@
