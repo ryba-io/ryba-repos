@@ -34,21 +34,22 @@ class Repos
   # - create a directory inside public under the repo(s) name(s)
   # - write a .repo file containing the mirror informations with changed url (inside public)
   # - copy to repos folder the original .repo file
-  sync: (repos, callback) ->
-    return callback Error "repos number (#{repos.length}) and urls number (#{urls?.length}) don't match" if urls? and repos.length isnt urls.length
-    each repos
+  sync: (options, callback) ->
+    options.store = path.resolve process.cwd(), options.store
+    return callback Error "repos number (#{options.repos.length}) and urls number (#{urls?.length}) don't match" if urls? and options.repos.length isnt urls.length
+    each options.repos
     .parallel true
     .call (repo, next) =>
-      repopath = "#{@options.store}/#{@options.system}/#{repo.repo}"
-      repofile_original = "#{@options.store}/../repos/#{@options.system}/#{repo.repo}.repo"
-      repofile_new = "#{@options.store}/#{@options.system}/#{repo.repo}.repo"
+      repopath = "#{options.store}/#{options.system}/#{repo.repo}"
+      repofile_original = "#{options.store}/../repos/#{options.system}/#{repo.repo}.repo"
+      repofile_new = "#{options.store}/#{options.system}/#{repo.repo}.repo"
       nikita
-        debug: @options.debug
+        debug: options.debug
       # write original file to repos/ directory (not executed if file already exists)
       .docker.build
-        machine: @options.machine
-        image: "ryba/repos_sync_#{@options.system}"
-        file: "#{__dirname}/../docker/Dockerfile.#{@options.system}"
+        machine: options.machine
+        image: "ryba/repos_sync_#{options.system}"
+        file: "#{__dirname}/../docker/Dockerfile.#{options.system}"
       .mkdir
         target: repopath
       # download ( or copy ) orignial repo file to repos folder
@@ -80,13 +81,13 @@ class Repos
           @next callback
       .docker.run
         # debug: true
-        image: "ryba/repos_sync_#{@options.system}"
-        machine: @options.machine
+        image: "ryba/repos_sync_#{options.system}"
+        machine: options.machine
         volume: [
           "#{repopath}:/var/ryba"
           "#{repofile_original}:/etc/yum.repos.d/#{path.basename repo.repo}.repo"
         ]
-        env: @options.env
+        env: options.env
         rm: true
       .next (err, status) ->
         return callback err if err
@@ -111,7 +112,6 @@ class Repos
       container: options.container
       machine: options.machine
     .next callback
-  
   # stop the ryba_repos container serving public directory
   stop: (options, callback) ->
     nikita
@@ -121,7 +121,6 @@ class Repos
       machine: options.machine
       code_skipped: 1
     .next callback
-
   # removes the ryba_repos container serving public directory
   remove: (repos, callback) ->
     repos ?= ['*']

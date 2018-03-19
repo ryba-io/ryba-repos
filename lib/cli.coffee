@@ -26,7 +26,7 @@ switch args.command
     throw Error "Incoherent Arguments Length" if args.urls.length and args.repos.length isnt args.urls.length
     args.repos = for repo, i in args.repos
       repo: repo, url: args.urls[i]
-    repos(args).sync args.repos, error
+    repos().sync args, error
   when 'start'
     repos().start args, (err, status) ->
       if err
