@@ -15,3 +15,11 @@ gpgcheck=1
 gpgkey=http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.4.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
 enabled=1
 priority=1
+
+[HDP-GPL-2.6.4.0]
+name=HDP-GPL Version - HDP-GPL-2.6.4.0
+baseurl=http://public-repo-1.hortonworks.com/HDP-GPL/centos7/2.x/updates/2.6.4.0
+gpgcheck=1
+gpgkey=http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.4.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+enabled=1
+priority=1 
