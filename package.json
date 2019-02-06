@@ -1,7 +1,7 @@
 {
   "name": "ryba-repos",
   "description": "Ryba repository handler for ryba working environment",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "David Worms <david@adaltas.com>",
   "bugs": {
     "email": "open@adaltas.com",
