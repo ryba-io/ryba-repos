@@ -16,11 +16,12 @@ if commands = params.helping args
 switch args.command
   when 'help' then console.log params.help args.name
   when 'list'
-    repos(args).list args.repo, (err, repos) ->
+    repos(args).list args, (err, systems) ->
       return if error err
-      for repo in repos
-        process.stdout.write repo
-        process.stdout.write '\n'
+      for system, repos of systems
+        process.stdout.write "#{system}\n"
+        for repo in repos
+          process.stdout.write "  #{repo}\n"
   when 'sync'
     args.urls ?= []
     throw Error "Incoherent Arguments Length" if args.urls.length and args.repos.length isnt args.urls.length

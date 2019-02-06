@@ -1,8 +1,8 @@
 #!/usr/bin/env coffee
 
-nikita = require 'nikita'
-misc =  require 'nikita/lib/misc'
-wrap = require('nikita/lib/misc/docker').wrap
+nikita = require '@nikitajs/core'
+misc =  require '@nikitajs/core/lib/misc'
+wrap = require('@nikitajs/core/lib/misc/docker').wrap
 fs = require 'fs'
 path = require 'path'
 rmr = require 'remove'
@@ -20,14 +20,26 @@ class Repos
 
   constructor: () ->
   
-  list: (repos, callback) ->
-    dir = path.resolve @options.store, @options.system
+  # Return an object containing the system and there repos
+  # eg: `{centos6: ['mysql'], centos7: ['centos', 'epel']}`
+  list: (options, callback) ->
+    dir = path.resolve options.store
     fs.readdir dir, (err, dirs) =>
       return callback err if err
-      return callback null, 'no repos' unless dirs.length
-      list = []
-      (list.push(name) unless /^.*\.repo$/.test name) for name in dirs     
-      callback null , list
+      systems = {}
+      each dirs
+      .parallel true
+      .call (system, next) =>
+        return next() if options.system and system isnt options.system
+        dir = path.resolve options.store, system
+        fs.readdir dir, (err, dirs) =>
+          return next err if err
+          list = []
+          (list.push(name) unless /^.*\.repo$/.test name) for name in dirs  
+          systems[system] = list   
+          next null , 
+      .next (err) ->
+        return callback err, systems
   
   # create the directories'layout (public, repo)
   # syncs the repos:
@@ -35,7 +47,7 @@ class Repos
   # - write a .repo file containing the mirror informations with changed url (inside public)
   # - copy to repos folder the original .repo file
   sync: (options, callback) ->
-    options.store = path.resolve process.cwd(), options.store
+    options.store = path.resolve coptions.store
     return callback Error "repos number (#{options.repos.length}) and urls number (#{urls?.length}) don't match" if urls? and options.repos.length isnt urls.length
     each options.repos
     .parallel true

@@ -41,7 +41,7 @@ module.exports =
       name: 'system'
       type: 'string'
       shortcut: 's'
-      required: true
+      required: false
       one_of: ['centos6', 'centos7']
       description: 'One of \'centos6\' or \'centos7\''
     ]
